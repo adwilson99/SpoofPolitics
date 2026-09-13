@@ -1,0 +1,10 @@
+# Render.com blueprint: push-to-deploy for the whole game.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: spoof-politics
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /api/health

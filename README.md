@@ -38,15 +38,46 @@ venv/bin/python run.py        # starts server on http://127.0.0.1:2026 and opens
 The game is an installable Progressive Web App: on your phone's browser, open
 the server's address and choose **Add to Home Screen** — it launches full-screen
 with its own rosette icon, and the app shell is cached for flaky connections
-(game state is always live from the server). Note: installation requires a
-secure context — `localhost`, or the server behind HTTPS when hosting for
-players on other devices.
+(game state is always live from the server). Installation requires HTTPS, which
+all hosts below provide automatically.
 
 Run the tests:
 
 ```bash
 venv/bin/python -m pytest tests/ -q
 ```
+
+## Publishing the game (free hosting)
+
+The game needs its Python server running (sessions live in memory), so static
+hosts like GitHub Pages won't work. Recommended free hosts for a long-running
+FastAPI app, all with automatic HTTPS:
+
+| Host | Free tier | Notes |
+|---|---|---|
+| [Render](https://render.com) | ✅ web service, sleeps after ~15 min idle | Easiest: one-click blueprint below. First visit after a nap takes ~30–60s to wake. |
+| [Koyeb](https://www.koyeb.com) | ✅ one free service | Uses the included `Dockerfile`. |
+| [PythonAnywhere](https://www.pythonanywhere.com) | ✅ always-on | No cold starts, but ASGI setup is fiddlier. |
+| Railway / Fly.io | ~small credits / pay-as-you-go | Great runners, no longer fully free. |
+
+**Deploy to Render in one click:**
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/adwilson99/SpoofPolitics)
+
+Or manually: create a **Web Service** from your repo, build command
+`pip install -r requirements.txt`, start command
+`uvicorn backend.main:app --host 0.0.0.0 --port $PORT` (a `render.yaml`
+blueprint and a `Dockerfile` are both included). Then:
+
+1. Open your `https://<app>.onrender.com` on the phone.
+2. Browser menu → **Add to Home Screen** / **Install app**.
+3. Launch it from the home screen like any other app. 🎩
+
+Tips for the free tier:
+- Sleepy instance? A free uptime pinger (e.g. UptimeRobot) hitting `/api/health`
+  every 10 minutes keeps it warm.
+- Saves live on the instance's disk, which free tiers wipe on redeploy — tell
+  players campaigns are session-length, or attach persistent storage.
 
 ## How to play (design summary)
 
