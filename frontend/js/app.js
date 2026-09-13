@@ -383,16 +383,25 @@ function launchConfetti() {
   }
 }
 
+const PHASE_ICONS = {
+  between: "📋",
+  by_campaign: "🗳️",
+  ge_campaign: "📺",
+  game_over: "🏁",
+};
+
 function renderHud(s) {
   const cur = s.country.currency_symbol;
+  const phaseIcon = PHASE_ICONS[s.phase] || "🏛️";
+  const phaseName = PHASE_LABELS[s.phase] || s.phase;
   el("hud").innerHTML = `
-    <div class="hud-chip week">Week <b>${s.week}</b></div>
-    <div class="hud-chip phase">${esc(PHASE_LABELS[s.phase] || s.phase)}</div>
-    <div class="hud-chip funds">${cur}<b>${s.funds.toLocaleString()}</b></div>
-    <div class="hud-chip">${apDots(s.ap, s.ap_per_week)} AP</div>
-    <div class="hud-chip">★ <b>${s.momentum.toFixed(1)}</b> momentum</div>
-    <div class="hud-chip">Wins <b>${s.wins}/${s.wins_required}</b></div>
-    <div class="hud-chip dim">Deposits lost: ${s.deposits_lost} · Scandals: ${s.scandals} · GE by week ${s.ge_turn}</div>`;
+    <div class="hud-chip" title="Week ${s.week} of the campaign">📅 <b>${s.week}</b></div>
+    <div class="hud-chip" title="${esc(phaseName)}">${phaseIcon}</div>
+    <div class="hud-chip" title="War chest: ${cur}${s.funds.toLocaleString()}">💰 <b>${s.funds.toLocaleString()}</b></div>
+    <div class="hud-chip" title="Action points: ${s.ap} of ${s.ap_per_week} left this week">${apDots(s.ap, s.ap_per_week)}</div>
+    <div class="hud-chip" title="Momentum: ${s.momentum.toFixed(1)} stars">★ <b>${s.momentum.toFixed(1)}</b></div>
+    <div class="hud-chip" title="By-election wins: ${s.wins} of ${s.wins_required} needed">🏆 <b>${s.wins}/${s.wins_required}</b></div>
+    <div class="hud-chip dim" title="Deposits lost: ${s.deposits_lost} · Scandals: ${s.scandals} · General Election by week ${s.ge_turn}">💔${s.deposits_lost} ⚠️${s.scandals} ⏳${s.ge_turn}</div>`;
 }
 
 function renderMapPanel(s) {
