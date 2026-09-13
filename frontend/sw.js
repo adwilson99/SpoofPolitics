@@ -3,7 +3,7 @@
    Game state (/api/) is NEVER cached: the Returning Officer insists on live data. */
 "use strict";
 
-const CACHE = "ltw-v2";
+const CACHE = "ltw-v4";
 const SHELL = [
   "/",
   "/static/css/main.css",
@@ -39,6 +39,9 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (event.request.method !== "GET" || url.pathname.startsWith("/api/")) {
     return; // game state stays live
+  }
+  if (url.pathname.startsWith("/static/audio/") || event.request.destination === "audio" || event.request.destination === "video") {
+    return; // media elements manage their own range requests — keep the SW out
   }
   if (event.request.mode === "navigate") {
     // network first so a running server always wins; offline falls back to the shell

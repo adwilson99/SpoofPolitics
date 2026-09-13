@@ -102,7 +102,8 @@
   <main id="campaign-screen" class="screen hidden">
     <header class="hud">
       <div class="hud-main" id="hud"></div>
-      <button id="end-week-button" class="btn-week hud-endweek" title="End the week: rivals move, news breaks, the clock ticks">⏭️</button>
+      <button id="music-toggle" class="hud-music" title="Theme music on/off">🔊</button>
+      <button id="end-week-button" class="hud-endweek" title="End the week: rivals move, news breaks, the clock ticks">⏭️</button>
     </header>
 
     <nav class="tab-bar" id="tab-bar" aria-label="Campaign panels">
@@ -144,6 +145,7 @@
     </section>
 
     <section class="tab-page hidden" id="tab-polls">
+      <section class="panel hidden" id="count-panel"></section>
       <div class="campaign-layout">
         <section class="panel" id="polls-panel"></section>
         <section class="panel hidden" id="result-panel"></section>
@@ -189,6 +191,16 @@
           </section>
         </div>
         <aside class="col-side">
+          <section class="panel">
+            <h3>Sound</h3>
+            <div class="settings-actions">
+              <button id="music-setting-toggle" class="btn-small">♪ Theme music: ON</button>
+              <label class="field volume-field"><span>Volume — <b id="music-volume-out">15%</b></span>
+                <input type="range" id="music-volume" min="0" max="100" value="15" />
+              </label>
+              <p class="hint">♪ <em>Cobblestone Overture</em> — loops softly in the background.</p>
+            </div>
+          </section>
           <section class="panel">
             <h3>Campaign data</h3>
             <div class="settings-actions">
@@ -251,6 +263,19 @@
       </div>
     </div>
   </div>
+
+  <!-- ============ HUD HELP TIP ============ -->
+  <div id="hud-help" class="overlay hidden">
+    <div class="help-card">
+      <div class="help-icon" id="hud-help-icon">📅</div>
+      <h3 id="hud-help-title" class="help-title"></h3>
+      <p id="hud-help-desc" class="help-desc"></p>
+      <p id="hud-help-detail" class="help-detail"></p>
+      <button id="hud-help-close" class="btn-secondary">Got it 👍</button>
+    </div>
+  </div>
+
+  <audio id="bgm" loop preload="none"></audio>
 
   <div id="toast" class="toast hidden"></div>
 

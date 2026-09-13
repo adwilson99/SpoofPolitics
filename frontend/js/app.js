@@ -390,18 +390,98 @@ const PHASE_ICONS = {
   game_over: "🏁",
 };
 
+const HELP_BY_PHASE = {
+  between: "No election is running — a rare luxury. Bank campaign energy, fundraise, sign sponsors and buy marketing; it all carries into your next fight.",
+  by_campaign: "A by-election is live. Every action builds campaign energy (CP) — the raw material that becomes votes on polling day.",
+  ge_campaign: "The General Election is ON. The whole nation votes when this sprint ends.",
+  game_over: "The campaign is over. The bins have been counted.",
+};
+
+function hudHelpContent(kind, s) {
+  const cur = s.country.currency_symbol;
+  switch (kind) {
+    case "week":
+      return {
+        icon: "📅",
+        title: `Week ${s.week}`,
+        desc: "Time runs in weeks. Spend action points during the week, then end it: rivals scheme, news breaks, and the clock ticks toward the next vote.",
+        detail: `Currently week ${s.week}. Wait it out and the General Election begins by week ${s.ge_turn} — or force one early once you have the wins.`,
+      };
+    case "phase":
+      return {
+        icon: PHASE_ICONS[s.phase] || "🏛️",
+        title: PHASE_LABELS[s.phase] || s.phase,
+        desc: HELP_BY_PHASE[s.phase] || "",
+        detail: s.campaign
+          ? `Fighting: ${s.campaign.region_name} · polling in ${Math.max(1, s.campaign.weeks_left)} week(s).`
+          : "No active campaign right now.",
+      };
+    case "funds":
+      return {
+        icon: "💰",
+        title: `War chest: ${cur}${s.funds.toLocaleString()}`,
+        desc: "Money pays for leaflets, rallies, marketing and sponsors. Grow it by fundraising, winning donations, or signing sponsors — who bring scandal risk. Go negative and you're bankrupt.",
+        detail: `Holding ${cur}${s.funds.toLocaleString()} · ${s.sponsors.length} sponsor(s) on the payroll · ${s.marketing.length} marketing placement(s) running.`,
+      };
+    case "ap":
+      return {
+        icon: "⚡",
+        title: `Action points: ${s.ap}/${s.ap_per_week}`,
+        desc: "Every campaign action costs AP. They refill at the start of each week, so never end one with AP unspent — energy banked is votes won.",
+        detail: `${s.ap} of ${s.ap_per_week} remaining this week.`,
+      };
+    case "momentum":
+      return {
+        icon: "★",
+        title: `Momentum: ${s.momentum.toFixed(1)}`,
+        desc: "Earned by winning by-elections (+1★) and gallant second places (+0.5★). Momentum boosts your weight in every election — though past 3 stars the extra shine stops helping.",
+        detail: `Currently ${s.momentum.toFixed(1)} stars. Every win also triggers donations from admirers.`,
+      };
+    case "wins": {
+      const left = Math.max(0, s.wins_required - s.wins);
+      return {
+        icon: "🏆",
+        title: `Wins: ${s.wins}/${s.wins_required}`,
+        desc: "Win by-elections to build momentum and unlock the General Election. Then choose your moment: force it early between campaigns, or wait for the clock.",
+        detail:
+          left > 0
+            ? `${left} more win(s) to unlock the General Election.`
+            : "Target reached — the General Election is unlocked!",
+      };
+    }
+    case "career":
+      return {
+        icon: "💔",
+        title: "Career scars",
+        desc: "💔 Deposits lost: under 5% of the vote and £500 is gone. ⚠️ Scandals: sponsors attract journalists. ⏳ GE clock: the week the nation votes if you don't force it sooner.",
+        detail: `${s.deposits_lost} deposit(s) lost · ${s.scandals} scandal(s) survived · GE by week ${s.ge_turn}${s.deposit_forgiveness ? ` · a mysterious benefactor will cover ${s.deposit_forgiveness} more deposit` : ""}.`,
+      };
+  }
+}
+
 function renderHud(s) {
   const cur = s.country.currency_symbol;
   const phaseIcon = PHASE_ICONS[s.phase] || "🏛️";
   const phaseName = PHASE_LABELS[s.phase] || s.phase;
   el("hud").innerHTML = `
-    <div class="hud-chip" title="Week ${s.week} of the campaign">📅 <b>${s.week}</b></div>
-    <div class="hud-chip" title="${esc(phaseName)}">${phaseIcon}</div>
-    <div class="hud-chip" title="War chest: ${cur}${s.funds.toLocaleString()}">💰 <b>${s.funds.toLocaleString()}</b></div>
-    <div class="hud-chip" title="Action points: ${s.ap} of ${s.ap_per_week} left this week">${apDots(s.ap, s.ap_per_week)}</div>
-    <div class="hud-chip" title="Momentum: ${s.momentum.toFixed(1)} stars">★ <b>${s.momentum.toFixed(1)}</b></div>
-    <div class="hud-chip" title="By-election wins: ${s.wins} of ${s.wins_required} needed">🏆 <b>${s.wins}/${s.wins_required}</b></div>
-    <div class="hud-chip dim" title="Deposits lost: ${s.deposits_lost} · Scandals: ${s.scandals} · General Election by week ${s.ge_turn}">💔${s.deposits_lost} ⚠️${s.scandals} ⏳${s.ge_turn}</div>`;
+    <div class="hud-chip" data-help="week" title="Week ${s.week} of the campaign">📅 <b>${s.week}</b></div>
+    <div class="hud-chip" data-help="phase" title="${esc(phaseName)}">${phaseIcon}</div>
+    <div class="hud-chip" data-help="funds" title="War chest: ${cur}${s.funds.toLocaleString()}">💰 <b>${s.funds.toLocaleString()}</b></div>
+    <div class="hud-chip" data-help="ap" title="Action points: ${s.ap} of ${s.ap_per_week}">${apDots(s.ap, s.ap_per_week)}</div>
+    <div class="hud-chip" data-help="momentum" title="Momentum: ${s.momentum.toFixed(1)} stars">★ <b>${s.momentum.toFixed(1)}</b></div>
+    <div class="hud-chip" data-help="wins" title="By-election wins: ${s.wins} of ${s.wins_required} needed">🏆 <b>${s.wins}/${s.wins_required}</b></div>
+    <div class="hud-chip dim" data-help="career" title="Deposits lost: ${s.deposits_lost} · Scandals: ${s.scandals} · General Election by week ${s.ge_turn}">💔${s.deposits_lost} ⚠️${s.scandals} ⏳${s.ge_turn}</div>`;
+}
+
+function showHudHelp(kind) {
+  if (!state.snapshot) return;
+  const tip = hudHelpContent(kind, state.snapshot);
+  if (!tip) return;
+  el("hud-help-icon").textContent = tip.icon;
+  el("hud-help-title").textContent = tip.title;
+  el("hud-help-desc").textContent = tip.desc;
+  el("hud-help-detail").textContent = tip.detail;
+  el("hud-help").classList.remove("hidden");
 }
 
 function renderMapPanel(s) {
@@ -541,39 +621,73 @@ function renderManifesto(s) {
 }
 
 function renderPolls(s) {
-  const cfg = countryCfg();
-  const parties = {};
-  if (cfg) {
-    for (const p of cfg.major_parties.concat(cfg.spoof_parties)) parties[p.id] = p;
+  const parties = partyMap();
+  parties[PLAYER_ID] = { short: s.candidate.party_name || "You", color: s.candidate.color };
+  const fallback = { short: "???", color: "#777" };
+
+  // Main chart: the latest election's ACTUAL results (GE national votes first,
+  // then the last by-election). Only before any vote does the cosmetic
+  // poll-of-polls take the stage.
+  let rows = [];
+  let title = "Poll of polls";
+  let subtitle = "the pollsters' best guess — cosmetic, until real votes land";
+  if (s.last_byresult) {
+    const r = s.last_byresult;
+    const winner = r.standings[0][0];
+    title = `Last election — ${r.region_name}`;
+    subtitle = `the votes as they fell · turnout ${(r.turnout * 100).toFixed(1)}% · ${r.votes_cast.toLocaleString()} votes cast`;
+    rows = r.standings.map(([pid, name, votes]) => ({
+      id: pid,
+      pct: r.votes_cast ? (votes / r.votes_cast) * 100 : 0,
+      party: parties[pid] || { short: name || pid, color: "#777" },
+      you: pid === PLAYER_ID,
+      won: pid === winner,
+    }));
+  } else if (s.ge_result) {
+    const votes = s.ge_result.national_votes || {};
+    const total = Object.values(votes).reduce((a, b) => a + b, 0) || 1;
+    title = "Last election — national";
+    subtitle = "the whole country, as counted";
+    rows = Object.entries(votes).map(([pid, v]) => ({
+      id: pid,
+      pct: (v / total) * 100,
+      party: parties[pid] || fallback,
+      you: pid === PLAYER_ID,
+      won: false,
+    }));
+  } else {
+    el("polls-panel").innerHTML = `
+      <h3>The polls</h3>
+      <div class="no-elections">
+        <div class="no-elections-emoji">🗳️</div>
+        <p class="no-elections-line">No elections as of yet.</p>
+        <p class="hint">Fight your first by-election and the results will be tallied here.</p>
+      </div>`;
+    return;
   }
-  parties[PLAYER_ID] = {
-    short: s.candidate.party_name || "You",
-    color: s.candidate.color,
-  };
-  const entries = Object.entries(s.polls)
-    .map(([id, share]) => ({ id, share, party: parties[id] || { short: id, color: "#888" } }))
-    .sort((a, b) => b.share - a.share);
-  const rows = entries.slice(0, 9);
-  const max = rows.length ? rows[0].share : 1;
-  const stack = entries
+  rows.sort((a, b) => b.pct - a.pct);
+  const max = rows.length ? rows[0].pct : 1;
+  const stack = rows
     .map(
       (r) =>
-        `<span class="vote-seg${r.id === PLAYER_ID ? " you" : ""}" style="width:${(r.share * 100).toFixed(2)}%;background:${esc(r.party.color)}" title="${esc(r.party.short)}: ${(r.share * 100).toFixed(1)}%"></span>`
+        `<span class="vote-seg${r.you ? " you" : ""}" style="width:${r.pct.toFixed(2)}%;background:${esc(r.party.color)}" title="${esc(r.party.short)}: ${r.pct.toFixed(1)}%"></span>`
     )
     .join("");
+  const bars = rows
+    .map(
+      (r) => `
+    <div class="poll-row${r.you ? " you" : ""}">
+      <div class="poll-label">${r.won ? "🏆 " : ""}${esc(r.party.short)}</div>
+      <div class="poll-bar-track"><div class="poll-bar" style="width:${((r.pct / max) * 100).toFixed(1)}%;background:${esc(r.party.color)}"></div></div>
+      <div class="poll-pct">${r.pct.toFixed(1)}%</div>
+    </div>`
+    )
+    .join("");
+
   el("polls-panel").innerHTML = `
-    <h3>Poll of polls <span class="dim small">(cosmetic)</span></h3>
+    <h3>${esc(title)} <span class="dim small">${esc(subtitle)}</span></h3>
     <div class="votes-bar polls-stack">${stack}</div>
-    ${rows
-      .map(
-        (r) => `
-      <div class="poll-row${r.id === PLAYER_ID ? " you" : ""}">
-        <div class="poll-label">${esc(r.party.short)}</div>
-        <div class="poll-bar-track"><div class="poll-bar" style="width:${((r.share / max) * 100).toFixed(1)}%;background:${esc(r.party.color)}"></div></div>
-        <div class="poll-pct">${(r.share * 100).toFixed(1)}%</div>
-      </div>`
-      )
-      .join("")}`;
+    ${bars}`;
 }
 
 function renderWarchest(s) {
@@ -628,14 +742,15 @@ function renderWarchest(s) {
 
 function renderNews(s) {
   el("news-panel").innerHTML = `
-    <h3>News</h3>
+    <h3>News archive</h3>
+    <div class="news-masthead"><span>All editions, most recent first</span><span>tap a story to read it</span></div>
     <div class="news-list">
       ${s.news
         .map(
           (n, i) => `
         <button type="button" class="news-item clickable tone-${esc(n.tone)}" data-news-index="${i}">
           <span class="news-week">W${n.week}</span> ${esc(n.headline)}
-          <span class="readmore">read the article →</span>
+          <span class="readmore">read all about it →</span>
         </button>`
         )
         .join("")}
@@ -697,6 +812,7 @@ async function doAction(actionId, params) {
 async function endWeek() {
   try {
     const res = await API.endWeek(state.gameId);
+    const prev = state.snapshot;
     state.snapshot = res.state;
     state.weekLog = [...(res.events || []), ...state.weekLog];
     const s = state.snapshot;
@@ -708,6 +824,20 @@ async function endWeek() {
     }
     if (s.game_over.over) {
       renderCampaign(); // bankruptcy etc: straight to the final edition
+      return;
+    }
+    // Polling day? Ditch the paper — the count IS the news.
+    const newResult = s.last_byresult;
+    const prevResult = prev ? prev.last_byresult : null;
+    const electionWeek = !!newResult && (
+      !prevResult ||
+      newResult.region_id !== prevResult.region_id ||
+      newResult.player_votes !== prevResult.player_votes ||
+      newResult.votes_cast !== prevResult.votes_cast
+    );
+    if (electionWeek) {
+      state.pendingPaper = false; // no paper over polling day
+      runByelectionCount(s, newResult);
       return;
     }
     const debate = extractDebateEvents(res.events || []);
@@ -725,6 +855,7 @@ async function endWeek() {
 /* ---------- The Weekly Dispatch: turn summary + articles ---------- */
 
 function showTurnSummary(s) {
+  if (state.countActive) return; // never paper over polling day
   state.pendingPaper = false;
   const week = s.week - 1; // the week that just ended
   const cfg = countryCfg();
@@ -868,6 +999,88 @@ function openArticle(item, s) {
     .map((p) => `<p>${esc(p)}</p>`)
     .join("");
   el("article-view").classList.remove("hidden");
+}
+
+let countTimer = null;
+
+function runByelectionCount(s, result) {
+  state.countActive = true;
+  showTab("polls");
+  const panel = el("count-panel");
+  const parties = partyMap();
+  parties[PLAYER_ID] = { short: s.candidate.party_name || "You", color: s.candidate.color };
+
+  const rows = result.standings.map(([pid, name, votes]) => ({
+    pid,
+    votes,
+    shown: 0,
+    color: pid === PLAYER_ID ? s.candidate.color : (parties[pid] ? parties[pid].color : "#777"),
+    short: pid === PLAYER_ID ? `${s.candidate.party_name || "You"} (you)` : (parties[pid] ? parties[pid].short : name),
+  }));
+
+  panel.innerHTML = `
+    <h3>🗳️ Polling day — ${esc(result.region_name)}</h3>
+    <div class="count-turnout">The count is underway · ${result.votes_cast.toLocaleString()} votes cast · turnout ${(result.turnout * 100).toFixed(1)}%</div>
+    <div class="count-rows">
+      ${rows
+        .map(
+          (r, i) => `
+        <div class="count-row" data-i="${i}">
+          <div class="count-name" title="${esc(r.short)}">${esc(r.short)}</div>
+          <div class="poll-bar-track"><div class="count-bar" style="background:${esc(r.color)}"></div></div>
+          <div class="count-votes">0</div>
+        </div>`
+        )
+        .join("")}
+    </div>
+    <div class="count-verdict hidden"></div>`;
+  panel.classList.remove("hidden");
+  el("result-panel").classList.add("hidden"); // no spoilers until the declarations
+
+  const rowEls = panel.querySelectorAll(".count-row");
+  const verdict = panel.querySelector(".count-verdict");
+  const total = result.votes_cast || 1;
+  const steps = 24;
+  let step = 0;
+  clearInterval(countTimer);
+  countTimer = setInterval(() => {
+    step += 1;
+    const p = Math.min(1, step / steps);
+    // ease-in-out: a slow start, a surge in the middle, exhausted counts at the end
+    const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    rows.forEach((r, i) => {
+      r.shown = Math.min(r.votes, Math.round(r.votes * ease * (0.96 + 0.08 * Math.random())));
+      rowEls[i].querySelector(".count-votes").textContent = r.shown.toLocaleString();
+      rowEls[i].querySelector(".count-bar").style.width = `${Math.min(100, (r.shown / total) * 220).toFixed(1)}%`;
+    });
+    if (step >= steps) {
+      clearInterval(countTimer);
+      finishByelectionCount(s, result, rows, rowEls, verdict);
+    }
+  }, 110);
+}
+
+function finishByelectionCount(s, result, rows, rowEls, verdict) {
+  // settle on the exact, final numbers
+  rows.forEach((r, i) => {
+    rowEls[i].querySelector(".count-votes").textContent = r.votes.toLocaleString();
+    rowEls[i].querySelector(".count-bar").style.width = `${Math.min(100, (r.votes / (result.votes_cast || 1)) * 220).toFixed(1)}%`;
+  });
+  const ranked = [...rows].sort((a, b) => b.votes - a.votes);
+  const winner = ranked[0];
+  verdict.classList.remove("hidden");
+  if (result.won) {
+    verdict.className = "count-verdict good";
+    verdict.innerHTML = `🏆 <b>${esc(s.candidate.party_name)}</b> WINS ${esc(result.region_name)} — ${result.player_votes.toLocaleString()} votes (${(result.player_share * 100).toFixed(1)}%)! The Returning Officer is not amused.`;
+  } else if (result.deposit_lost) {
+    verdict.className = "count-verdict bad";
+    verdict.innerHTML = `💔 <b>${esc(winner.short)}</b> takes ${esc(result.region_name)} — and ${esc(s.candidate.party_name)} loses the deposit with ${result.player_votes.toLocaleString()} votes.`;
+  } else {
+    verdict.className = "count-verdict";
+    verdict.innerHTML = `📣 <b>${esc(winner.short)}</b> takes ${esc(result.region_name)} — ${esc(s.candidate.party_name)} finishes #${result.player_rank} on ${(result.player_share * 100).toFixed(1)}%, deposit saved.`;
+  }
+  renderCampaign(); // the full standings appear beneath the declaration
+  state.countActive = false;
 }
 
 function extractDebateEvents(events) {
@@ -1109,6 +1322,7 @@ function fillSettings(s) {
     renderPersonaGridInto("set-persona-grid", () => {})
   );
   el("settings-info").textContent = `${s.country.flag_emoji} ${s.country.name} · ${s.difficulty} · week ${s.week}`;
+  musicSyncSettings();
 }
 
 async function applySettings() {
@@ -1129,6 +1343,97 @@ async function applySettings() {
     renderCampaign();
   } catch (err) {
     showToast(err.message, 4200);
+  }
+}
+
+/* ---------- Background music (drop your track at /static/audio/theme.mp3) ---------- */
+
+const MUSIC = {
+  on: localStorage.getItem("ltw_music") !== "off",
+  started: false,
+  target: parseInt(localStorage.getItem("ltw_music_vol") ?? "15", 10) / 100, // whisper by default
+  _ramp: null,
+};
+
+function musicSyncSettings() {
+  const toggle = el("music-setting-toggle");
+  if (toggle) toggle.textContent = MUSIC.on ? "♪ Theme music: ON" : "♪ Theme music: OFF";
+  const slider = el("music-volume");
+  if (slider) {
+    slider.value = Math.round(MUSIC.target * 100);
+    const out = el("music-volume-out");
+    if (out) out.textContent = `${Math.round(MUSIC.target * 100)}%`;
+  }
+}
+
+function musicUpdateButton() {
+  const b = el("music-toggle");
+  if (!b) return;
+  b.textContent = MUSIC.on ? "🔊" : "🔇";
+  b.title = MUSIC.on
+    ? "Theme music: on — tap to mute"
+    : "Theme music: muted — tap to play";
+  musicSyncSettings();
+}
+
+function musicSetVolume(pct) {
+  pct = Math.min(100, Math.max(0, Math.round(pct)));
+  MUSIC.target = pct / 100;
+  localStorage.setItem("ltw_music_vol", String(pct));
+  const a = el("bgm");
+  if (a && MUSIC.on && MUSIC.started) {
+    a.volume = MUSIC.target; // direct set while scrubbing the slider
+  }
+  musicSyncSettings();
+}
+
+function musicRamp(to) {
+  const a = el("bgm");
+  if (!a) return;
+  clearInterval(MUSIC._ramp);
+  const from = a.volume;
+  const steps = 25;
+  let i = 0;
+  MUSIC._ramp = setInterval(() => {
+    i += 1;
+    a.volume = Math.min(1, Math.max(0, from + ((to - from) * i) / steps));
+    if (i >= steps) {
+      clearInterval(MUSIC._ramp);
+      if (to === 0) a.pause();
+    }
+  }, 60);
+}
+
+async function musicStart() {
+  const a = el("bgm");
+  if (!a || !MUSIC.on || MUSIC.started) return;
+  MUSIC.started = true;
+  if (!a.src) {
+    a.src = "/static/audio/theme.mp3";
+    a.onerror = () => {
+      MUSIC.on = false;
+      musicUpdateButton();
+      el("music-toggle")?.classList.add("hidden");
+      console.warn("[music] theme.mp3 could not be loaded — is it in frontend/audio/?");
+    };
+  }
+  try {
+    await a.play();
+    musicRamp(MUSIC.target);
+  } catch (err) {
+    MUSIC.started = false; // browser wants another gesture — the next tap retries
+    console.info("[music] waiting for a user gesture:", err?.name);
+  }
+}
+
+function musicToggle() {
+  MUSIC.on = !MUSIC.on;
+  localStorage.setItem("ltw_music", MUSIC.on ? "on" : "off");
+  musicUpdateButton();
+  if (MUSIC.on) {
+    musicStart();
+  } else {
+    musicRamp(0);
   }
 }
 
@@ -1159,6 +1464,12 @@ async function boot() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   }
+  // Music: browsers only allow audio after a user gesture — every tap retries
+  // until playback succeeds (self-healing on iOS/standalone quirk modes).
+  musicUpdateButton();
+  document.addEventListener("pointerdown", () => {
+    if (MUSIC.on && !MUSIC.started) musicStart();
+  });
 }
 
 el("start-button").addEventListener("click", enterSetup);
@@ -1167,6 +1478,13 @@ el("launch-button").addEventListener("click", launchGame);
 el("cand-name").addEventListener("input", updateLaunchButton);
 el("cand-party").addEventListener("input", updateLaunchButton);
 el("end-week-button").addEventListener("click", endWeek);
+el("music-toggle").addEventListener("click", musicToggle);
+el("music-setting-toggle").addEventListener("click", () => {
+  musicToggle();
+});
+el("music-volume").addEventListener("input", (e) => {
+  musicSetVolume(Number(e.target.value));
+});
 el("save-button").addEventListener("click", saveCurrentGame);
 el("abandon-button").addEventListener("click", abandonGame);
 el("apply-settings").addEventListener("click", applySettings);
@@ -1182,12 +1500,21 @@ document.querySelectorAll(".tab-btn").forEach((b) =>
 el("go-button").addEventListener("click", abandonGame);
 el("debate-close").addEventListener("click", () => {
   el("debate-modal").classList.add("hidden");
-  if (state.pendingPaper && state.snapshot && !state.snapshot.game_over.over) {
+  if (state.pendingPaper && state.snapshot && !state.snapshot.game_over.over && !state.countActive) {
     showTurnSummary(state.snapshot); // the presses were waiting for the debate
   }
+  state.pendingPaper = false;
 });
 el("paper-close").addEventListener("click", () => el("turn-summary").classList.add("hidden"));
 el("article-back").addEventListener("click", () => el("article-view").classList.add("hidden"));
+el("hud").addEventListener("click", (e) => {
+  const chip = e.target.closest("[data-help]");
+  if (chip) showHudHelp(chip.dataset.help);
+});
+el("hud-help-close").addEventListener("click", () => el("hud-help").classList.add("hidden"));
+el("hud-help").addEventListener("click", (e) => {
+  if (e.target === el("hud-help")) el("hud-help").classList.add("hidden"); // tap outside to dismiss
+});
 el("en-continue").addEventListener("click", () => {
   el("election-night").classList.add("hidden");
   renderCampaign();
