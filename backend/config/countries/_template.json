@@ -1,0 +1,249 @@
+{
+  "_how_to_use": "Copy this file to countries/<your_country_id>.json and replace the placeholder values. Keys starting with '_' are ignored by the game. See HOW_TO_ADD_A_COUNTRY.md for the full field-by-field guide.",
+
+  "id": "example",
+  "name": "Example Republic",
+  "flag_emoji": "\ud83c\uddf1\ud83c\uddf7",
+  "game_title": "Loony to the Leadership",
+  "subtitle": "From counting beans to counting ballots.",
+
+  "currency": { "symbol": "\u20ac", "code": "EUR" },
+  "deposit": {
+    "amount": 500,
+    "vote_threshold": 1000,
+    "loss_line": "You failed to reach 1,000 votes. Your \u20ac500 deposit is forfeit.",
+    "kept_line": "Over 1,000 votes! Your \u20ac500 deposit is saved."
+  },
+
+  "offices": {
+    "local_title": "Senator",
+    "local_title_long": "Senator of the Republic",
+    "leader_title": "President",
+    "residence": "The White House (a pub called The White Harte)",
+    "chamber": "National Assembly",
+    "coalition_talks": "Cross-party talks in a back room of the Grand Hotel"
+  },
+
+  "election": {
+    "byelection_label": "special election",
+    "generalelection_label": "General Election",
+    "max_candidates_on_ballot": 8,
+    "campaign_weeks_per_election": 3
+  },
+
+  "voter_axes": {
+    "niche_joy": "How much this area enjoys a good joke candidate",
+    "protest_mood": "Appetite for sticking it to the big parties",
+    "cost_of_living": "Local pain over prices, rent and bills",
+    "change_hungry": "Demand for anything that isn't politics as usual"
+  },
+
+  "marketing_channels": [
+    {
+      "id": "billboard",
+      "name": "Billboard",
+      "emoji": "\ud83e\udea7",
+      "cost": 400,
+      "reach": 8,
+      "weeks": 2,
+      "appeal": { "youth": 0.3, "middle": 0.6, "pensioner": 0.7 },
+      "blurb": "A big sign by the roundabout."
+    },
+    {
+      "id": "social_ads",
+      "name": "Social Media Ads",
+      "emoji": "\ud83d\udcf1",
+      "cost": 300,
+      "reach": 7,
+      "weeks": 1,
+      "appeal": { "youth": 0.8, "middle": 0.4, "pensioner": 0.2 },
+      "blurb": "Precisely targeted at people who argue in comment sections."
+    }
+  ],
+
+  "sponsorship": {
+    "intro_line": "Investors want in on the joke. Their money buys reach \u2014 and the public can smell a backroom deal.",
+    "scandal_note": "Scandals surface randomly each week. More sponsors = higher scandal risk.",
+    "scandal_headline_templates": [
+      "{party} CAUGHT IN CASH-FOR-FAVOURS SAGA",
+      "WHO REALLY FUNDS {party}?"
+    ],
+    "tiers": [
+      {
+        "id": "local_bakery",
+        "name": "The Local Bakery",
+        "emoji": "\ud83e\udd50",
+        "amount": 300,
+        "scandal_risk": 0.02,
+        "blurb": "\u20ac300 and a lifetime supply of bread puns."
+      },
+      {
+        "id": "shady_billionaire",
+        "name": "Mysterious Billionaire",
+        "emoji": "\ud83d\udd74\ufe0f",
+        "amount": 5000,
+        "scandal_risk": 0.45,
+        "blurb": "He asks for nothing. He absolutely wants something."
+      }
+    ]
+  },
+
+  "policies": [
+    {
+      "id": "free_bean_toast",
+      "name": "Free Bean Toast",
+      "emoji": "\ud83e\udded",
+      "blurb": "Breakfast is a human right. Beans are breakfast. QED.",
+      "appeal": { "youth": 0.6, "middle": 0.6, "pensioner": 0.5 },
+      "tags": ["food", "cost_of_living"]
+    },
+    {
+      "id": "conestone_wifi",
+      "name": "Wi-Fi in Every Bus Shelter",
+      "emoji": "\ud83d\udcf6",
+      "blurb": "Democracy's true town square, now with full bars.",
+      "appeal": { "youth": 0.8, "middle": 0.5, "pensioner": 0.3 },
+      "tags": ["transport", "youth"]
+    }
+  ],
+
+  "synergies": [
+    {
+      "id": "beans_and_buses",
+      "name": "Beans & Buses",
+      "emoji": "\ud83d\ude8c",
+      "blurb": "Commute with breakfast. Society is healed.",
+      "requires_tags": ["food", "transport"],
+      "requires_policies": [],
+      "bonus_cp": 4,
+      "bonus_bias": { "youth": 0.5, "middle": 0.4, "pensioner": 0.1 }
+    }
+  ],
+
+  "personas": [
+    {
+      "id": "market_staller",
+      "name": "Market Staller",
+      "emoji": "\ud83e\udd66",
+      "blurb": "Can shout over any crowd. Learned the trade among actual vegetables.",
+      "action_cp_multipliers": { "canvass": 1.3 },
+      "fundraise_multiplier": 1.2,
+      "scandal_resistance": 0.0,
+      "baby_cry_immunity": false,
+      "debate_bonus": 0.1
+    }
+  ],
+
+  "events": {
+    "good": [
+      {
+        "id": "bakery_praise",
+        "headline": "The {newspaper} bakery column praises {party}. Sales of everything rise, including votes.",
+        "weight": 1,
+        "funds": 50,
+        "cp": 2,
+        "momentum": 0
+      }
+    ],
+    "bad": [
+      {
+        "id": "gull_incident",
+        "headline": "A seagull steals {party}'s notes mid-speech in {region}. The gull reads them aloud, badly.",
+        "weight": 1,
+        "funds": 0,
+        "cp": 3,
+        "momentum": 0
+      }
+    ]
+  },
+
+  "major_parties": [
+    {
+      "id": "unity",
+      "name": "Unity Party",
+      "short": "Unity",
+      "color": "#AA0000",
+      "emoji": "\ud83e\uddf1",
+      "leader": { "name": "Max Quibble", "persona": "A career politician who has never queueed for anything." },
+      "blurb": "Unity: because two of everything was too confusing.",
+      "traits": { "aggression": 1.1, "focus": "middle", "variance": 0.15, "stunt": 0.1, "attack": 0.2, "grit": 0.6 },
+      "quips": [
+        "{short} ask who exactly 'checked' your figures.",
+        "{short} call your launch event 'quaint'."
+      ],
+      "regions": null
+    },
+    {
+      "id": "frontier",
+      "name": "Frontier Alliance",
+      "short": "Frontier",
+      "color": "#0000AA",
+      "emoji": "\ud83c\udfd4\ufe0f",
+      "leader": { "name": "Blair Mountainhigh", "persona": "Loves the flag, the mountains, and long pauses before saying 'freedom'." },
+      "blurb": "Frontier: forward, always forward, never quite specifying where to.",
+      "regions": null
+    }
+  ],
+
+  "spoof_parties": [
+    {
+      "id": "turnip",
+      "name": "The Sensible Turnip Party",
+      "short": "Turnip",
+      "color": "#F5F5DC",
+      "emoji": "\ud83e\udd55",
+      "leader": { "name": "Sir Reginald Turnip III", "persona": "A root vegetable aristocrat with a monocle and a grudge against mashed politics." },
+      "blurb": "Root and branch reform. Mostly root.",
+      "policies_hint": ["A turnip in every pot", "Mashed politics", "Free manure for all"],
+      "regions": null
+    }
+  ],
+
+  "regions": [
+    {
+      "id": "capital",
+      "name": "Capital District",
+      "electorate": 70000,
+      "turnout_base": 0.62,
+      "demographics": { "youth": 30, "middle": 45, "pensioner": 25, "niche_joy": 0.7, "protest_mood": 0.5, "cost_of_living": 0.8, "change_hungry": 0.6 },
+      "local_issues": ["Rent is a myth told by landlords", "Traffic cone black market", "Bus sentence: life, without parole"]
+    },
+    {
+      "id": "countryside",
+      "name": "The Green Shires",
+      "electorate": 65000,
+      "turnout_base": 0.66,
+      "demographics": { "youth": 15, "middle": 40, "pensioner": 45, "niche_joy": 0.6, "protest_mood": 0.5, "cost_of_living": 0.6, "change_hungry": 0.4 },
+      "local_issues": ["Cows outnumber voters", "Broadband arrives by carrier pigeon", "Festival field vs. farming season"]
+    },
+    {
+      "id": "coastal",
+      "name": "The Salty Coast",
+      "electorate": 60000,
+      "turnout_base": 0.64,
+      "demographics": { "youth": 20, "middle": 40, "pensioner": 40, "niche_joy": 0.75, "protest_mood": 0.6, "cost_of_living": 0.65, "change_hungry": 0.5 },
+      "local_issues": ["Seagulls with organised crime links", "Fish and chip price crisis", "The pier is older than the democracy"]
+    }
+  ],
+
+  "flavour": {
+    "newspapers": ["The Daily Blab", "The Morning Horn"],
+    "tv_shows": ["Question Tyme"],
+    "loading_lines": ["Counting beans\u2026", "Polishing rosettes\u2026"],
+    "victory_lines": [
+      "You did it. From card table to the {residence}. The nation chose chaos, and it chose YOU."
+    ],
+    "defeat_lines": [
+      "The nation has spoken, and it wasn't about you. Chin up: there's always the next election."
+    ],
+    "deposit_loss_lines": [
+      "The Returning Officer stamps your receipt with unusual enthusiasm."
+    ],
+    "quiet_week_templates": [
+      "Slow week: {newspaper} runs 800 words on {issue}. {party} unmentioned.",
+      "{show} books {rival} twice and {party} once, at 6am."
+    ]
+  },
+
+  "disclaimer": "This is a satirical comedy game. It is not affiliated with, endorsed by, or connected to any real political party, politician, or person. All characters and events are affectionate caricature. Intended purely for humour; meant to offend no one. Please vote responsibly in real life."
+}

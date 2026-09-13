@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loony to Westminster</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗳️</text></svg>" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0b1120" />
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+</head>
+<body>
+  <!-- Big honest disclaimer banner: visible on every screen until dismissed -->
+  <div id="disclaimer-bar" class="disclaimer-bar hidden">
+    <span id="disclaimer-bar-text"></span>
+    <button id="disclaimer-close" class="btn-small" aria-label="Dismiss disclaimer">Got it</button>
+  </div>
+
+  <!-- ============ TITLE SCREEN ============ -->
+  <main id="title-screen" class="screen title-screen">
+    <div class="title-card">
+      <div class="title-flag" id="title-flag">🗳️</div>
+      <h1 class="game-title" id="game-title">Loony to Westminster</h1>
+      <p class="subtitle" id="game-subtitle">From counting bins to counting votes.</p>
+
+      <p class="disclaimer-inline" id="disclaimer-inline"></p>
+
+      <section class="setup-section hidden" id="saves-section">
+        <h2>Continue campaign</h2>
+        <div id="saves-list" class="saves-list"></div>
+      </section>
+
+      <section class="setup-section">
+        <h2>Choose your country</h2>
+        <div id="country-grid" class="country-grid" aria-label="Country selection"></div>
+      </section>
+
+      <section class="setup-section">
+        <h2>Choose your difficulty</h2>
+        <div id="difficulty-grid" class="difficulty-grid" aria-label="Difficulty selection"></div>
+      </section>
+
+      <button id="start-button" class="btn-primary" disabled>Start Campaign 🎩</button>
+      <p class="hint" id="setup-hint">Select a country and a difficulty to begin.</p>
+    </div>
+
+    <footer class="footer">
+      <p>Made for laughs. Not affiliated with any party, politician, person, or sentient bin.</p>
+      <p class="footer-fineprint">All caricature, no malice — please vote responsibly in real life.</p>
+    </footer>
+  </main>
+
+  <!-- ============ CANDIDATE CREATION ============ -->
+  <main id="setup-screen" class="screen hidden">
+    <div class="title-card">
+      <p class="screen-kicker" id="setup-kicker"></p>
+      <h2 class="screen-title">Create your candidate</h2>
+
+      <div class="form-grid">
+        <label class="field"><span>Your name</span>
+          <input id="cand-name" maxlength="60" placeholder="e.g. Rory Spatula" autocomplete="off" />
+        </label>
+        <label class="field"><span>Party name</span>
+          <input id="cand-party" maxlength="60" placeholder="e.g. The Sensible Loon Party" autocomplete="off" />
+        </label>
+        <label class="field"><span>Slogan <em>(optional)</em></span>
+          <input id="cand-slogan" maxlength="120" placeholder="e.g. A spatula in every drawer" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="form-row">
+        <div class="field"><span>Badge</span><div id="emoji-row" class="emoji-row"></div></div>
+        <label class="field"><span>Rosette colour</span>
+          <input type="color" id="cand-color" value="#D4A937" />
+        </label>
+      </div>
+
+      <section class="setup-section">
+        <h2>Choose a persona <span class="optional">(optional — small perk)</span></h2>
+        <div id="persona-grid" class="card-grid"></div>
+      </section>
+
+      <section class="setup-section">
+        <h2>Manifesto — pick exactly 3 policies</h2>
+        <div id="policy-grid" class="card-grid"></div>
+        <p class="hint" id="policy-hint"></p>
+      </section>
+
+      <div class="btn-row">
+        <button id="back-button" class="btn-secondary">← Back</button>
+        <button id="launch-button" class="btn-primary" disabled>Launch Campaign 🎩</button>
+      </div>
+      <p class="hint" id="launch-hint"></p>
+    </div>
+  </main>
+
+  <!-- ============ CAMPAIGN SCREEN ============ -->
+  <main id="campaign-screen" class="screen hidden">
+    <header class="hud">
+      <div class="hud-main" id="hud"></div>
+      <button id="end-week-button" class="btn-week hud-endweek">End week ⏭️</button>
+    </header>
+
+    <nav class="tab-bar" id="tab-bar" aria-label="Campaign panels">
+      <button class="tab-btn active" data-tab="campaign">🏛️ Campaign</button>
+      <button class="tab-btn" data-tab="map">🗺️ Map</button>
+      <button class="tab-btn" data-tab="polls">📊 Polls</button>
+      <button class="tab-btn" data-tab="warchest">💰 War chest</button>
+      <button class="tab-btn" data-tab="news">📰 News</button>
+      <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
+    </nav>
+
+    <section class="tab-page" id="tab-campaign">
+      <div class="campaign-layout">
+        <div class="col-main">
+          <section class="panel" id="campaign-status"></section>
+          <section class="panel">
+            <h3>Campaign actions</h3>
+            <div id="actions-grid" class="actions-grid"></div>
+            <p class="hint">Marketing &amp; sponsors live in the war chest tab →</p>
+          </section>
+        </div>
+        <aside class="col-side">
+          <section class="panel" id="manifesto-panel"></section>
+          <section class="panel">
+            <h3>This week</h3>
+            <div id="week-log" class="week-log"></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="tab-page hidden" id="tab-map">
+      <section class="panel map-panel">
+        <h3>The battlefield</h3>
+        <div id="map-legend" class="map-legend"></div>
+        <div id="map-body" class="map-body"></div>
+        <p class="hint" id="map-hint"></p>
+      </section>
+    </section>
+
+    <section class="tab-page hidden" id="tab-polls">
+      <div class="campaign-layout">
+        <section class="panel" id="polls-panel"></section>
+        <section class="panel hidden" id="result-panel"></section>
+      </div>
+    </section>
+
+    <section class="tab-page hidden" id="tab-warchest">
+      <section class="panel" id="warchest-panel"></section>
+    </section>
+
+    <section class="tab-page hidden" id="tab-news">
+      <section class="panel" id="news-panel"></section>
+    </section>
+
+    <section class="tab-page hidden" id="tab-settings">
+      <div class="campaign-layout">
+        <div class="col-main">
+          <section class="panel">
+            <h3>Your image</h3>
+            <p class="hint">Rebrand mid-campaign. The press barely notices; the rosette does.</p>
+            <div class="form-grid">
+              <label class="field"><span>Candidate name</span>
+                <input id="set-name" maxlength="60" autocomplete="off" />
+              </label>
+              <label class="field"><span>Party name</span>
+                <input id="set-party" maxlength="60" autocomplete="off" />
+              </label>
+              <label class="field"><span>Slogan</span>
+                <input id="set-slogan" maxlength="120" autocomplete="off" />
+              </label>
+            </div>
+            <div class="form-row">
+              <div class="field"><span>Badge</span><div id="set-emoji-row" class="emoji-row"></div></div>
+              <label class="field"><span>Rosette colour</span>
+                <input type="color" id="set-color" value="#D4A937" />
+              </label>
+            </div>
+            <section class="setup-section">
+              <h2>Persona <span class="optional">(swap anytime)</span></h2>
+              <div id="set-persona-grid" class="card-grid"></div>
+            </section>
+            <button id="apply-settings" class="btn-primary">Apply changes ✨</button>
+          </section>
+        </div>
+        <aside class="col-side">
+          <section class="panel">
+            <h3>Campaign data</h3>
+            <div class="settings-actions">
+              <button id="save-button" class="btn-small save-btn">💾 Save campaign</button>
+              <button id="title-button" class="btn-small">🏠 Title screen</button>
+              <button id="abandon-button" class="btn-small abandon">🗑️ Abandon campaign</button>
+            </div>
+            <p class="hint" id="settings-info"></p>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <footer class="footer"></footer>
+  </main>
+
+  <!-- ============ GAME OVER ============ -->
+  <div id="gameover-overlay" class="overlay hidden">
+    <div id="confetti" class="confetti hidden"></div>
+    <div class="overlay-card">
+      <div id="go-emoji" class="go-emoji">🎉</div>
+      <h2 id="go-title" class="go-title"></h2>
+      <p id="go-reason" class="go-reason"></p>
+      <div id="go-stats" class="go-stats"></div>
+      <div id="go-recap" class="go-recap"></div>
+      <button id="go-button" class="btn-primary">Back to the drawing board</button>
+    </div>
+  </div>
+
+  <!-- ============ DEBATE NIGHT ============ -->
+  <div id="debate-modal" class="overlay hidden">
+    <div class="overlay-card debate-card">
+      <div class="go-emoji">🎤</div>
+      <h2 class="go-title">Debate Night</h2>
+      <p class="debate-sub">Live from a leisure centre, somewhere with parking</p>
+      <div id="debate-lines" class="debate-lines"></div>
+      <button id="debate-close" class="btn-primary">Take the stage 🎤</button>
+    </div>
+  </div>
+
+  <!-- ============ ELECTION NIGHT ============ -->
+  <div id="election-night" class="overlay hidden">
+    <div class="en-card">
+      <h2 class="en-title">📺 Election Night</h2>
+      <p class="en-sub" id="en-sub">Results are coming in…</p>
+      <div class="en-grid">
+        <div id="en-map" class="en-map"></div>
+        <div class="en-side">
+          <div id="en-ticker" class="en-ticker"></div>
+          <div id="en-summary" class="en-summary hidden">
+            <h3>National vote</h3>
+            <div id="en-votes-bar" class="votes-bar"></div>
+            <div id="en-votes-legend" class="votes-legend"></div>
+            <h3>Seats</h3>
+            <div id="en-seats" class="seats-grid"></div>
+            <div id="en-coalition" class="en-coalition hidden"></div>
+            <button id="en-continue" class="btn-primary">Concede or celebrate →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ============ TURN SUMMARY: THE NEWSPAPER ============ -->
+  <div id="turn-summary" class="overlay hidden">
+    <div class="paper">
+      <div class="paper-masthead"><span id="paper-name">The Daily Blab</span></div>
+      <div class="paper-dateline"><span id="paper-week"></span><span>Price: one rosette</span></div>
+      <div class="paper-summary" id="paper-summary"></div>
+      <h4 class="paper-section">In the news</h4>
+      <div id="paper-news" class="paper-news"></div>
+      <button id="paper-close" class="btn-primary paper-btn">Onward! →</button>
+    </div>
+  </div>
+
+  <!-- ============ SINGLE NEWS ARTICLE ============ -->
+  <div id="article-view" class="overlay hidden">
+    <div class="paper article">
+      <div class="paper-masthead"><span id="article-paper">The Daily Blab</span></div>
+      <div class="paper-dateline"><span id="article-kicker" class="kicker"></span><span id="article-week"></span></div>
+      <div id="article-image" class="article-image"></div>
+      <h2 id="article-headline" class="article-headline"></h2>
+      <p class="article-byline" id="article-byline"></p>
+      <div id="article-body" class="article-body"></div>
+      <button id="article-back" class="btn-secondary paper-btn">← Back to the paper</button>
+    </div>
+  </div>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/map.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
