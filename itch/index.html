@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loony to Westminster</title>
+<style>
+  :root { --navy: #0b1120; --gold: #d4a937; --ink: #eef2fb; --dim: #9fabc7; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(900px 600px at 50% -10%, #25375c, var(--navy) 70%);
+    color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; padding: 24px; text-align: center;
+  }
+  .card { max-width: 560px; }
+  .flag { font-size: 3rem; }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif; color: var(--gold);
+    font-size: clamp(1.6rem, 5vw, 2.6rem); margin: 8px 0 4px; letter-spacing: 0.5px;
+  }
+  .sub { color: var(--dim); font-style: italic; margin: 0 0 18px; }
+  .blurb { font-size: 0.95rem; line-height: 1.6; margin: 0 auto 20px; max-width: 470px; }
+  .features { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 26px; }
+  .chip {
+    border: 1px solid #25375c; border-radius: 999px; padding: 4px 12px;
+    font-size: 0.75rem; color: var(--dim); background: rgba(0, 0, 0, 0.25);
+  }
+  .play {
+    display: inline-block; font-family: Georgia, serif; font-weight: 700; font-size: 1.3rem;
+    color: var(--navy); background: linear-gradient(180deg, #e8c96a, var(--gold));
+    padding: 16px 42px; border-radius: 999px; text-decoration: none;
+    box-shadow: 0 6px 18px rgba(212, 169, 55, 0.35); transition: transform 0.1s ease;
+  }
+  .play:hover { transform: translateY(-2px); }
+  .note { margin-top: 16px; font-size: 0.72rem; line-height: 1.5; color: var(--dim); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="flag">🗳️🎩</div>
+    <h1>Loony to Westminster</h1>
+    <p class="sub">From counting bins to counting votes.</p>
+    <p class="blurb">
+      Create a joke Independent, survive by-elections without losing your £500 deposit,
+      out-campaign Count Binface &amp; co., debate your rivals and grab headlines in the papers,
+      then seize 10 Downing Street — one absurd promise at a time.
+    </p>
+    <div class="features">
+      <span class="chip">🗳️ Real by-election campaigns</span>
+      <span class="chip">🎭 Rival AI with debates</span>
+      <span class="chip">📰 Satirical newspaper</span>
+      <span class="chip">🗺️ Live UK control map</span>
+      <span class="chip">🎵 Brass-band theme</span>
+    </div>
+    <a class="play" href="https://spoof-politics.onrender.com" target="_blank" rel="noopener">▶ Play in your browser</a>
+    <p class="note">
+      Opens the live game — free, no install, works great on mobile<br>
+      (tip: add it to your home screen for the full app experience).<br><br>
+      A satirical comedy game. Not affiliated with any real party, politician,<br>
+      person, or sentient bin. Please vote responsibly in real life.
+    </p>
+  </div>
+</body>
+</html>

@@ -79,6 +79,12 @@ Tips for the free tier:
 - Saves live on the instance's disk, which free tiers wipe on redeploy — tell
   players campaigns are session-length, or attach persistent storage.
 
+### itch.io
+
+A ready-made itch landing page (branded cover + "Play in your browser" button
+pointing at your live deployment) lives in [`itch/`](itch/) — see
+[`itch/UPLOAD.md`](itch/UPLOAD.md) for the two-minute upload guide.
+
 ## How to play (design summary)
 
 1. **Create your candidate** — name, party, slogan, a **persona** (six archetypes,
