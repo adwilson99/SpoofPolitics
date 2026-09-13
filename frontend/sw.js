@@ -3,7 +3,7 @@
    Game state (/api/) is NEVER cached: the Returning Officer insists on live data. */
 "use strict";
 
-const CACHE = "ltw-v1";
+const CACHE = "ltw-v2";
 const SHELL = [
   "/",
   "/static/css/main.css",
@@ -45,17 +45,20 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(fetch(event.request).catch(() => caches.match("/")));
     return;
   }
+  // Same-origin assets: stale-while-revalidate — serve instantly from cache,
+  // refresh the copy in the background so deploys reach players on next load.
   event.respondWith(
-    caches.match(event.request).then(
-      (hit) =>
-        hit ||
-        fetch(event.request).then((res) => {
+    caches.open(CACHE).then(async (cache) => {
+      const hit = await cache.match(event.request);
+      const network = fetch(event.request)
+        .then((res) => {
           if (url.origin === location.origin && res.ok) {
-            const copy = res.clone();
-            caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+            cache.put(event.request, res.clone());
           }
           return res;
         })
-    )
+        .catch(() => hit);
+      return hit || network;
+    })
   );
 });
