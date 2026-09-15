@@ -6,6 +6,7 @@
    (or vice versa). Same snapshot shape, same rules, same affectionate cruelty. */
 "use strict";
 
+const ENGINE = (() => {
 const PLAYER_ID = "__player__";
 const BUCKETS = ("youth middle pensioner").split(" ");
 
@@ -518,7 +519,7 @@ class GameEngine {
     this.persona = CONTENT.personaOf(country, candidate.persona || "");
     this._manifestoCache = null;
     seed = seed != null ? seed : Math.floor(Math.random() * 2 ** 31);
-    this.rng = makeRng(seed);
+    this.rng = RNG_MODULE.makeRng(seed);
 
     const mood = {};
     for (const p of country.all_parties) {
@@ -1156,7 +1157,7 @@ class GameEngine {
     engine.state = state;
     engine.persona = CONTENT.personaOf(country, state.candidate.persona || "");
     engine._manifestoCache = null;
-    engine.rng = makeRng(state.rng_seed ^ 0x5a4e);
+    engine.rng = RNG_MODULE.makeRng(state.rng_seed ^ 0x5a4e);
     return engine;
   }
 }
@@ -1224,3 +1225,20 @@ globalThis.ENGINE = {
   BUCKETS,
   ACTION_CATALOG,
 };
+
+  return {
+    GameEngine,
+    expandCountry,
+    attachConfigHelpers,
+    CONTENT,
+    ELECTIONS,
+    RIVALS,
+    fmtTemplate,
+    PLAYER_ID,
+    BUCKETS,
+    ACTION_CATALOG,
+    makeRng: RNG_MODULE.makeRng,
+  };
+})();
+
+globalThis.ENGINE = ENGINE;
