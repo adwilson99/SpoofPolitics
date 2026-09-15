@@ -85,6 +85,21 @@ A ready-made itch landing page (branded cover + "Play in your browser" button
 pointing at your live deployment) lives in [`itch/`](itch/) — see
 [`itch/UPLOAD.md`](itch/UPLOAD.md) for the two-minute upload guide.
 
+**Fully static itch build:** the entire game engine also runs client-side
+([`frontend/js/engine.js`](frontend/js/engine.js) — a port of the Python
+backend, with saves in `localStorage`). `frontend/js/api.js` auto-detects the
+mode: if a server answers `/api/health` it uses it, otherwise the game runs
+entirely in the browser. The GitHub Action
+`.github/workflows/itch-deploy.yml` packages `frontend/` and pushes it to
+itch.io via butler. One-time setup:
+
+1. itch.io → Settings → API keys → generate a key
+2. Repo Settings → Secrets and variables → Actions → new secret
+   `BUTLER_API_KEY` (never commit the key itself — the itch build is
+   client-side and can never hold secrets)
+3. Create the itch project with URL slug `spoof-politics`, kind HTML
+4. Run the workflow (Actions → Deploy static build to itch.io), or push a `v*` tag
+
 ## How to play (design summary)
 
 1. **Create your candidate** — name, party, slogan, a **persona** (six archetypes,

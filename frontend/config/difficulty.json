@@ -1,0 +1,51 @@
+{
+  "easy": {
+    "label": "Easy — A Gentle Stroll to Westminster",
+    "description": "Losing deposits is (almost) character building. The electorate is unusually delighted by nonsense.",
+    "wins_required": 2,
+    "starting_funds": 2000,
+    "ap_per_week": 4,
+    "rival_aggression": 0.6,
+    "good_event_bias": 0.4,
+    "deposit_forgiveness": 1,
+    "ge_turn": 16,
+    "byelection_interval_turns": 3,
+    "marketing_efficiency": 1.2,
+    "scandal_magnitude": 0.6,
+    "event_frequency": 0.3,
+    "ge_defense": 0.55
+  },
+  "medium": {
+    "label": "Medium — A Proper Campaign",
+    "description": "The classic experience. Spend wisely, kiss carefully, and mind the news cycle.",
+    "wins_required": 3,
+    "starting_funds": 1200,
+    "ap_per_week": 3,
+    "rival_aggression": 0.8,
+    "good_event_bias": 0.25,
+    "deposit_forgiveness": 0,
+    "ge_turn": 20,
+    "byelection_interval_turns": 3,
+    "marketing_efficiency": 1.0,
+    "scandal_magnitude": 1.0,
+    "event_frequency": 0.35,
+    "ge_defense": 0.95
+  },
+  "hard": {
+    "label": "Hard — The Wrath of the Returning Officer",
+    "description": "Tight wallets, ruthless rivals, and a press pack that can smell a gaffe from orbit.",
+    "wins_required": 5,
+    "starting_funds": 800,
+    "ap_per_week": 3,
+    "rival_aggression": 1.1,
+    "good_event_bias": 0.1,
+    "deposit_forgiveness": 0,
+    "ge_turn": 24,
+    "byelection_interval_turns": 2,
+    "marketing_efficiency": 0.8,
+    "scandal_magnitude": 1.4,
+    "event_frequency": 0.4,
+    "ge_defense": 3.9,
+    "split_counties": true
+  }
+}

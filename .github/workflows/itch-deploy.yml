@@ -1,0 +1,40 @@
+name: Deploy static build to itch.io
+
+# The client-side build (frontend/ + the JS game engine) is packaged and
+# pushed to itch.io via butler. One-time setup (see README "itch.io"):
+#   1. Repo Settings → Secrets and variables → Actions → New repository secret
+#      Name: BUTLER_API_KEY   Value: your itch.io API key (itch.io → Settings → API keys)
+#   2. Create the itch project with the URL slug "spoof-politics"
+#   3. Run this workflow (Actions → Deploy static build to itch.io → Run)
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package static build
+        run: |
+          mkdir -p dist
+          cp -r frontend/* dist/
+          rm -f dist/sw.js dist/manifest.json
+          cd dist
+          zip -r ../spoof-politics-itch.zip .
+
+      - name: Download butler (itch.io CLI)
+        run: |
+          curl -L -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -o butler.zip
+          chmod +x butler
+
+      - name: Push to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          ./butler login --api-key "$BUTLER_API_KEY"
+          ./butler push spoof-politics-itch.zip adwilson99/spoof-politics:html

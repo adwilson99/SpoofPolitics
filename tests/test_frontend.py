@@ -10,10 +10,15 @@ client = TestClient(app)
 
 def test_static_assets_served():
     for path in (
-        "/static/js/api.js",
-        "/static/js/map.js",
-        "/static/js/app.js",
         "/static/css/main.css",
+        "/static/js/api.js",
+        "/static/js/rng.js",
+        "/static/js/engine.js",
+        "/static/js/local-api.js",
+        "/static/js/map.js",
+        "/static/map/united-kingdom.svg",
+        "/static/config/difficulty.json",
+        "/static/config/countries/uk.json",
     ):
         assert client.get(path).status_code == 200, path
 
