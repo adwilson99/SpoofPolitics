@@ -29,7 +29,7 @@ app = FastAPI(
 app.include_router(router)
 app.include_router(game_router)
 app.include_router(saves_router)
-app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR / "static"), name="static")
 
 
 @app.get("/", include_in_schema=False)
