@@ -9,6 +9,12 @@ const LocalAPI = (() => {
   let presets = null;
   const SAVES_KEY = "ltw_saves";
 
+  // Embedded configs (shipped as configs.js) work even on file://;
+  // fetch() is the fallback for older builds.
+  function shipped() {
+    return globalThis.SHIPPED_CONFIGS || null;
+  }
+
   async function fetchJson(path) {
     const res = await fetch(path);
     if (!res.ok) throw new Error(`missing game data: ${path} (${res.status})`);
@@ -16,12 +22,17 @@ const LocalAPI = (() => {
   }
 
   async function getPresets() {
+    const s = shipped();
+    if (s) return s.difficulties;
     if (!presets) presets = await fetchJson("static/config/difficulty.json");
     return presets;
   }
 
   async function getCountry(id, split) {
-    if (!rawCfg[id]) rawCfg[id] = await fetchJson(`static/config/countries/${id}.json`);
+    const s = shipped();
+    if (!rawCfg[id]) {
+      rawCfg[id] = s && s.countries[id] ? s.countries[id] : await fetchJson(`static/config/countries/${id}.json`);
+    }
     const cfg = structuredClone(rawCfg[id]);
     ENGINE.attachConfigHelpers(cfg);
     return split ? ENGINE.expandCountry(cfg) : cfg;
@@ -51,6 +62,16 @@ const LocalAPI = (() => {
 
   return {
     async countries() {
+      const s = shipped();
+      if (s) {
+        return Object.values(s.countries).map((raw) => ({
+          id: raw.id,
+          name: raw.name,
+          flag_emoji: raw.flag_emoji,
+          game_title: raw.game_title,
+          subtitle: raw.subtitle || "",
+        }));
+      }
       const raw = await fetchJson("static/config/countries/uk.json");
       return [
         {
