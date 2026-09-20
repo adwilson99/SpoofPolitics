@@ -16,12 +16,12 @@ const LocalAPI = (() => {
   }
 
   async function getPresets() {
-    if (!presets) presets = await fetchJson("/static/config/difficulty.json");
+    if (!presets) presets = await fetchJson("static/config/difficulty.json");
     return presets;
   }
 
   async function getCountry(id, split) {
-    if (!rawCfg[id]) rawCfg[id] = await fetchJson(`/static/config/countries/${id}.json`);
+    if (!rawCfg[id]) rawCfg[id] = await fetchJson(`static/config/countries/${id}.json`);
     const cfg = structuredClone(rawCfg[id]);
     ENGINE.attachConfigHelpers(cfg);
     return split ? ENGINE.expandCountry(cfg) : cfg;
@@ -51,7 +51,7 @@ const LocalAPI = (() => {
 
   return {
     async countries() {
-      const raw = await fetchJson("/static/config/countries/uk.json");
+      const raw = await fetchJson("static/config/countries/uk.json");
       return [
         {
           id: raw.id,

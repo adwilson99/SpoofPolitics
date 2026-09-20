@@ -1409,7 +1409,7 @@ async function musicStart() {
   if (!a || !MUSIC.on || MUSIC.started) return;
   MUSIC.started = true;
   if (!a.src) {
-    a.src = "/static/audio/theme.mp3";
+    a.src = "static/audio/theme.mp3";
     a.onerror = () => {
       MUSIC.on = false;
       musicUpdateButton();

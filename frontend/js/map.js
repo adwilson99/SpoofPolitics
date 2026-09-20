@@ -8,7 +8,7 @@
 "use strict";
 
 const UKMAP = {
-  SVG_URL: "/static/map/united-kingdom.svg",
+  SVG_URL: "static/map/united-kingdom.svg",
   DEFAULT_FILL: "#22314f",
   _svgText: null,
 

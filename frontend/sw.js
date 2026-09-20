@@ -3,7 +3,7 @@
    Game state (/api/) is NEVER cached: the Returning Officer insists on live data. */
 "use strict";
 
-const CACHE = "ltw-v6";
+const CACHE = "ltw-v7";
 const SHELL = [
   "/",
   "/static/css/main.css",
