@@ -18,6 +18,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check for itch API key
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          if [ -z "$BUTLER_API_KEY" ]; then
+            echo "::error::BUTLER_API_KEY secret is missing. Add it under repo Settings → Secrets and variables → Actions (get the key from itch.io → Settings → API keys)."
+            exit 1
+          fi
+          echo "itch API key is present ✓"
+
       - name: Package static build
         run: |
           mkdir -p dist
