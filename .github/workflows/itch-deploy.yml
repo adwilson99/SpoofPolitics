@@ -44,7 +44,6 @@ jobs:
 
       - name: Push to itch.io
         env:
-          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }} # butler reads this automatically
         run: |
-          ./butler login --api-key "$BUTLER_API_KEY"
           ./butler push spoof-politics-itch.zip adwilson99/spoof-politics:html
