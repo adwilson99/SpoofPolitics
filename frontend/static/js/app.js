@@ -104,9 +104,11 @@ function renderCountries() {
     card.className = "country-card";
     card.type = "button";
     card.innerHTML = `
-      <div class="flag">${esc(c.flag_emoji)}</div>
-      <div class="name">${esc(c.name)}</div>
-      <div class="in-game-title">${esc(c.game_title)}</div>`;
+      <span class="flag">${esc(c.flag_emoji)}</span>
+      <span class="c-info">
+        <span class="name">${esc(c.name)}</span>
+        <span class="in-game-title">${esc(c.game_title)}</span>
+      </span>`;
     card.addEventListener("click", () => selectCountry(c.id, card));
     grid.appendChild(card);
   }
@@ -130,32 +132,38 @@ async function selectCountry(id, cardEl) {
   } catch (err) {
     showToast(`Could not load country: ${err.message}`);
   }
+  updateDifficultyDetail(); // currency symbol in the small print
   updateStartButton();
 }
 
 function renderDifficulties() {
-  const grid = el("difficulty-grid");
-  grid.innerHTML = "";
+  const seg = el("difficulty-grid");
+  seg.innerHTML = "";
   for (const [key, preset] of Object.entries(state.difficulties)) {
-    const card = document.createElement("button");
-    card.className = "difficulty-card";
-    card.type = "button";
-    card.innerHTML = `
-      <div class="label">${esc(preset.label)}</div>
-      <div class="desc">${esc(preset.description)}</div>
-      <div class="facts">
-        By-election wins needed: ${preset.wins_required} ·
-        Starting funds: ${preset.starting_funds}
-      </div>`;
-    card.addEventListener("click", () => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "seg-btn" + (state.selectedDifficulty === key ? " selected" : "");
+    btn.textContent = preset.label;
+    btn.addEventListener("click", () => {
       state.selectedDifficulty = key;
-      document
-        .querySelectorAll(".difficulty-card")
-        .forEach((n) => n.classList.toggle("selected", n === card));
+      seg.querySelectorAll(".seg-btn").forEach((n) => n.classList.toggle("selected", n === btn));
+      updateDifficultyDetail();
       updateStartButton();
     });
-    grid.appendChild(card);
+    seg.appendChild(btn);
   }
+  updateDifficultyDetail();
+}
+
+function updateDifficultyDetail() {
+  const preset = state.difficulties[state.selectedDifficulty];
+  const detail = el("difficulty-detail");
+  if (!preset) {
+    detail.innerHTML = "Pick a difficulty to see the small print.";
+    return;
+  }
+  const cur = (state.countryConfigs[state.selectedCountry] || {}).currency_symbol || "";
+  detail.innerHTML = `${esc(preset.description)} — <b>${preset.wins_required} wins</b> to unlock the General Election · starts with <b>${cur}${preset.starting_funds.toLocaleString()}</b>`;
 }
 
 function updateStartButton() {
@@ -179,11 +187,19 @@ function enterSetup() {
   el("cand-slogan").value = "";
   el("cand-color").value = "#D4A937";
   el("setup-kicker").textContent = `${cfg.flag_emoji} ${cfg.name} · ${state.difficulties[state.selectedDifficulty].label}`;
+  updateRosettePreview();
   renderEmojiRow();
   renderPersonaGrid();
   renderPolicyGrid();
   updateLaunchButton();
   showScreen("setup");
+}
+
+function updateRosettePreview() {
+  const preview = el("rosette-preview");
+  if (!preview) return;
+  preview.style.borderColor = el("cand-color").value;
+  el("rosette-emoji").textContent = state.emoji;
 }
 
 function renderEmojiRow() {
@@ -200,6 +216,7 @@ function renderEmojiRowInto(containerId, rerender) {
     b.textContent = e;
     b.addEventListener("click", () => {
       state.emoji = e;
+      updateRosettePreview();
       rerender();
     });
     row.appendChild(b);
@@ -1093,6 +1110,16 @@ function finishByelectionCount(s, result, rows, rowEls, verdict) {
     verdict.innerHTML = `📣 <b>${esc(winner.short)}</b> takes ${esc(result.region_name)} — ${esc(s.candidate.party_name)} finishes #${result.player_rank} on ${(result.player_share * 100).toFixed(1)}%, deposit saved.`;
   }
   renderCampaign(); // the full standings appear beneath the declaration
+
+  // Collapse the live count to its headline so the polls tab stays inside the
+  // frame: the round-by-round rows are replaced by the verdict; the complete
+  // standings table and vote bars follow below.
+  const panel = el("count-panel");
+  const verdictHtml = `<div class="${verdict.className}" style="margin-top: 8px">${verdict.innerHTML}</div>`;
+  panel.innerHTML = `
+    <h3>🗳️ Polling day — ${esc(result.region_name)}</h3>
+    <div class="count-turnout">Turnout ${(result.turnout * 100).toFixed(1)}% · ${result.votes_cast.toLocaleString()} votes cast</div>
+    ${verdictHtml}`;
   state.countActive = false;
 }
 
@@ -1492,6 +1519,7 @@ el("start-button").addEventListener("click", enterSetup);
 el("back-button").addEventListener("click", () => showScreen("title"));
 el("launch-button").addEventListener("click", launchGame);
 el("cand-name").addEventListener("input", updateLaunchButton);
+el("cand-color").addEventListener("input", updateRosettePreview);
 el("cand-party").addEventListener("input", updateLaunchButton);
 el("end-week-button").addEventListener("click", endWeek);
 el("music-toggle").addEventListener("click", musicToggle);
