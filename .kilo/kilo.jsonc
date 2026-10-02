@@ -1,0 +1,10 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "indexing": {
+    "provider": "openai-compatible",
+    "openai-compatible": {
+      "baseUrl": "https://litellm.aidademo.com",
+      "apiKey": "sk-tsokrSTi9KyNrYGQD72X6A"
+    }
+  }
+}

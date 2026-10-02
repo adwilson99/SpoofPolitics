@@ -181,6 +181,7 @@ function enterSetup() {
   if (!cfg) return;
   state.emoji = "🎩";
   state.persona = "";
+  state.personaIndex = 0;
   state.policies = new Set();
   el("cand-name").value = "";
   el("cand-party").value = "";
@@ -188,22 +189,88 @@ function enterSetup() {
   el("cand-color").value = "#D4A937";
   el("setup-kicker").textContent = `${cfg.flag_emoji} ${cfg.name} · ${state.difficulties[state.selectedDifficulty].label}`;
   updateRosettePreview();
-  renderEmojiRow();
-  renderPersonaGrid();
+  renderPersonaCarousel();
   renderPolicyGrid();
   updateLaunchButton();
   showScreen("setup");
 }
 
 function updateRosettePreview() {
-  const preview = el("rosette-preview");
-  if (!preview) return;
-  preview.style.borderColor = el("cand-color").value;
-  el("rosette-emoji").textContent = state.emoji;
+  const color = el("cand-color").value;
+  for (const id of ["rosette-preview", "modal-rosette-preview"]) {
+    const preview = el(id);
+    if (!preview) continue;
+    preview.style.borderColor = color;
+    preview.querySelector("span").textContent = state.emoji;
+  }
+  const picker = el("modal-color");
+  if (picker) picker.value = color;
 }
 
-function renderEmojiRow() {
-  renderEmojiRowInto("emoji-row", () => renderEmojiRow());
+/* ---------- Rosette designer popup ---------- */
+
+const ROSETTE_COLOURS = [
+  "#D4A937", "#E4003B", "#1A4FA0", "#23A05A",
+  "#7030A0", "#FF7A00", "#E85D9E", "#0F172A",
+];
+
+function openRosetteModal() {
+  el("rosette-modal").classList.remove("hidden");
+  const rerender = () => renderEmojiRowInto("modal-emoji-row", rerender);
+  renderEmojiRowInto("modal-emoji-row", rerender);
+  renderSwatches();
+  updateRosettePreview();
+}
+
+function renderSwatches() {
+  const row = el("swatch-row");
+  row.innerHTML = "";
+  const current = el("cand-color").value.toLowerCase();
+  for (const c of ROSETTE_COLOURS) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "swatch" + (c.toLowerCase() === current ? " selected" : "");
+    b.style.background = c;
+    b.title = c;
+    b.addEventListener("click", () => {
+      el("cand-color").value = c;
+      updateRosettePreview();
+      renderSwatches();
+    });
+    row.appendChild(b);
+  }
+}
+
+/* ---------- Persona carousel ---------- */
+
+function personaItems() {
+  const cfg = countryCfg();
+  return [
+    { id: "", emoji: "🚫", name: "No persona", blurb: "Just you, a rosette, and an unreasonable amount of hope." },
+    ...(cfg ? cfg.personas || [] : []),
+  ];
+}
+
+function renderPersonaCarousel() {
+  const items = personaItems();
+  if (!items.length) return;
+  state.personaIndex = Math.min(state.personaIndex || 0, items.length - 1);
+  const p = items[state.personaIndex];
+  const stage = el("persona-stage");
+  stage.innerHTML = `
+    <button type="button" class="pick-card persona car-card${state.persona === p.id ? " selected" : ""}">
+      <span class="car-emoji">${esc(p.emoji || "🎭")}</span>
+      <span class="car-body">
+        <span class="pick-name">${esc(p.name)}</span>
+        <span class="car-blurb">${esc(p.blurb)}</span>
+      </span>
+    </button>`;
+  stage.querySelector(".car-card").addEventListener("click", () => {
+    state.persona = state.persona === p.id ? "" : p.id;
+    renderPersonaCarousel();
+  });
+  el("persona-count").textContent =
+    `${state.personaIndex + 1} / ${items.length}` + (state.persona ? " · selected ✓" : " · tap the card to select");
 }
 
 function renderEmojiRowInto(containerId, rerender) {
@@ -221,10 +288,6 @@ function renderEmojiRowInto(containerId, rerender) {
     });
     row.appendChild(b);
   }
-}
-
-function renderPersonaGrid() {
-  renderPersonaGridInto("persona-grid", () => renderPersonaGrid());
 }
 
 function renderPersonaGridInto(containerId, rerender) {
@@ -1520,6 +1583,23 @@ el("back-button").addEventListener("click", () => showScreen("title"));
 el("launch-button").addEventListener("click", launchGame);
 el("cand-name").addEventListener("input", updateLaunchButton);
 el("cand-color").addEventListener("input", updateRosettePreview);
+el("rosette-launch").addEventListener("click", openRosetteModal);
+el("rosette-close").addEventListener("click", () => el("rosette-modal").classList.add("hidden"));
+el("modal-color").addEventListener("input", (e) => {
+  el("cand-color").value = e.target.value;
+  updateRosettePreview();
+  renderSwatches();
+});
+el("persona-prev").addEventListener("click", () => {
+  const n = personaItems().length;
+  state.personaIndex = (state.personaIndex - 1 + n) % n;
+  renderPersonaCarousel();
+});
+el("persona-next").addEventListener("click", () => {
+  const n = personaItems().length;
+  state.personaIndex = (state.personaIndex + 1) % n;
+  renderPersonaCarousel();
+});
 el("cand-party").addEventListener("input", updateLaunchButton);
 el("end-week-button").addEventListener("click", endWeek);
 el("music-toggle").addEventListener("click", musicToggle);

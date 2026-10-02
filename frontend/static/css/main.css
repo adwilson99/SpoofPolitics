@@ -139,7 +139,13 @@ html, body {
   font-family: var(--font-ui);
   text-align: left;
 }
-.country-card:hover { border-color: var(--gold); }
+.country-card:hover {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, var(--gold-soft), var(--gold));
+  color: var(--navy-900);
+}
+.country-card:hover .name { color: var(--navy-900); }
+.country-card:hover .in-game-title { color: rgba(11, 17, 32, 0.75); }
 .country-card.selected {
   border-color: var(--gold);
   background: var(--navy-600);
@@ -175,6 +181,10 @@ html, body {
   transition: background 0.15s ease, color 0.15s ease;
 }
 .seg-btn:hover { color: var(--ink); }
+.seg-btn:hover:not(.selected) {
+  background: linear-gradient(180deg, var(--gold-soft), var(--gold));
+  color: var(--navy-900);
+}
 .seg-btn.selected {
   background: linear-gradient(180deg, var(--gold-soft), var(--gold));
   color: var(--navy-900);
@@ -334,6 +344,67 @@ html, body {
   font-size: 1.05rem;
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.25);
 }
+
+/* Rosette designer: launcher button + popup */
+.rosette-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--navy-700);
+  border: 1.5px solid var(--navy-600);
+  border-radius: 12px;
+  padding: 5px 14px 5px 5px;
+  cursor: pointer;
+  color: var(--ink-dim);
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+}
+.rosette-launch:hover { border-color: var(--gold); }
+.rosette-launch .rl-hint { font-style: italic; }
+.rosette-card { max-width: 430px; }
+.rosette-big { width: 64px; height: 64px; font-size: 1.6rem; border-width: 7px; margin: 0 auto; }
+.rosette-card .emoji-row { justify-content: center; margin: 14px 0; }
+.swatch-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+.swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  padding: 0;
+}
+.swatch:hover { border-color: #fff; }
+.swatch.selected { box-shadow: 0 0 0 3px var(--gold); border-color: #fff; }
+.custom-colour { align-items: center; margin: 0 auto 10px; }
+
+/* Persona carousel: one card at a time, arrows either side */
+.carousel { display: flex; gap: 8px; align-items: stretch; }
+.car-btn {
+  flex: 0 0 auto;
+  width: 36px;
+  border-radius: 10px;
+  background: var(--navy-700);
+  border: 1.5px solid var(--navy-600);
+  color: var(--gold-soft);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+.car-btn:hover { border-color: var(--gold); background: var(--navy-600); }
+.car-stage { flex: 1 1 auto; min-width: 0; }
+.car-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  text-align: left;
+}
+.car-emoji { font-size: 1.7rem; flex: 0 0 auto; }
+.car-body { display: flex; flex-direction: column; min-width: 0; }
+.car-blurb { font-size: 0.75rem; color: var(--ink-dim); margin-top: 3px; line-height: 1.35; }
+.car-count { text-align: center; font-size: 0.7rem; color: var(--ink-dim); margin: 5px 0 0; }
 
 /* ---------- Pick cards (personas + policies) ---------- */
 
@@ -1198,6 +1269,21 @@ svg.ukmap path.foreign {
   .pick-card .pick-emoji { flex: 0 0 auto; }
   .pick-card .pick-blurb,
   .pick-card .tag-row { display: none; }
+
+  /* manifesto: a single column, scrolling inside the frame */
+  #policy-grid {
+    grid-template-columns: 1fr;
+    max-height: 42vh;
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+  }
+
+  /* persona carousel: compact card */
+  .car-card { padding: 7px 12px; }
+  .car-emoji { font-size: 1.4rem; }
+  .car-blurb { font-size: 0.68rem; margin-top: 2px; }
+  .car-count { margin: 3px 0 0; }
 
   /* badge row on one line: 10 emojis + the colour swatch fit the left column */
   .form-row { flex-wrap: nowrap; }

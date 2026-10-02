@@ -81,19 +81,24 @@
             </div>
 
             <div class="form-row">
-              <div class="field"><span>Badge</span><div id="emoji-row" class="emoji-row"></div></div>
-              <div class="field"><span>Rosette colour</span>
-                <input type="color" id="cand-color" value="#D4A937" />
-              </div>
-              <div class="field"><span>On the lapel</span>
-                <div class="rosette-preview" id="rosette-preview"><span id="rosette-emoji">🎩</span></div>
+              <div class="field"><span>Badge & rosette</span>
+                <button type="button" class="rosette-launch" id="rosette-launch" title="Choose your badge and rosette colour">
+                  <span class="rosette-preview" id="rosette-preview"><span id="rosette-emoji">🎩</span></span>
+                  <span class="rl-hint">Design your rosette</span>
+                </button>
               </div>
             </div>
+            <input type="color" id="cand-color" value="#D4A937" hidden />
           </section>
 
           <section class="setup-section">
             <h2>🎭 Choose a persona <span class="optional">(optional — small perk)</span></h2>
-            <div id="persona-grid" class="card-grid"></div>
+            <div class="carousel" id="persona-carousel">
+              <button type="button" class="car-btn" id="persona-prev" aria-label="Previous persona">‹</button>
+              <div class="car-stage" id="persona-stage"></div>
+              <button type="button" class="car-btn" id="persona-next" aria-label="Next persona">›</button>
+            </div>
+            <p class="car-count" id="persona-count"></p>
           </section>
         </div>
 
@@ -247,6 +252,22 @@
       <div id="go-stats" class="go-stats"></div>
       <div id="go-recap" class="go-recap"></div>
       <button id="go-button" class="btn-primary">Back to the drawing board</button>
+    </div>
+  </div>
+
+  <!-- ============ ROSETTE DESIGNER ============ -->
+  <div id="rosette-modal" class="overlay hidden">
+    <div class="overlay-card rosette-card">
+      <div class="go-emoji">🎗️</div>
+      <h2 class="go-title">Design your rosette</h2>
+      <p class="debate-sub">Pick a badge and a colour — the press will read into it either way</p>
+      <div class="rosette-preview rosette-big" id="modal-rosette-preview"><span id="modal-rosette-emoji">🎩</span></div>
+      <div class="emoji-row" id="modal-emoji-row"></div>
+      <div class="swatch-row" id="swatch-row"></div>
+      <label class="field custom-colour"><span>Custom colour</span>
+        <input type="color" id="modal-color" value="#D4A937" />
+      </label>
+      <button id="rosette-close" class="btn-primary">Looking sharp ✓</button>
     </div>
   </div>
 
