@@ -5,12 +5,12 @@
 import fs from "node:fs";
 
 const load = (p) => fs.readFileSync(p, "utf8");
-const src = [load("frontend/js/rng.js"), load("frontend/js/engine.js")].join("\n");
+const src = [load("frontend/static/js/rng.js"), load("frontend/static/js/engine.js")].join("\n");
 (0, eval)(src); // defines globalThis.ENGINE
 
 const E = globalThis.ENGINE;
-const cfgRaw = JSON.parse(load("frontend/config/countries/uk.json"));
-const presets = JSON.parse(load("frontend/config/difficulty.json"));
+const cfgRaw = JSON.parse(load("frontend/static/config/countries/uk.json"));
+const presets = JSON.parse(load("frontend/static/config/difficulty.json"));
 
 const ACTABLE = new Set([
   "canvass", "leaflets", "social_post", "baby_kiss", "pub_visit", "radio_phone_in", "rally", "press_stunt",

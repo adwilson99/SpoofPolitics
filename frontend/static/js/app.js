@@ -1460,9 +1460,12 @@ async function boot() {
   } catch (err) {
     showToast(`Failed to reach the game server: ${err.message}`, 6000);
   }
-  // PWA: installable / offline-capable (needs https or localhost)
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  // PWA: installable / offline-capable (needs https or localhost).
+  // Only when we're the top-level document: on itch.io the game runs in an
+  // iframe on itch's origin, where sw.js doesn't exist (and a root-relative
+  // /sw.js would 404 against html-classic.itch.zone).
+  if ("serviceWorker" in navigator && window.self === window.top) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
   }
   // Music: browsers only allow audio after a user gesture — every tap retries
   // until playback succeeds (self-healing on iOS/standalone quirk modes).

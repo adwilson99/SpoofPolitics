@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir -p dist
           cp -r frontend/* dist/
-          rm -f dist/sw.js dist/manifest.json
+          rm -f dist/sw.js
           cd dist
           zip -r ../spoof-politics-itch.zip .
 
