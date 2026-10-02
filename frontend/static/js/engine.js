@@ -46,6 +46,7 @@ const ELECTIONS = {
   NOISE_SIGMA: 0.07,
   BASE_TURNOUT_BOOST: 0.04,
   COALITION_BASE_CHANCE: 0.3,
+  WINNER_TACTICAL_TRANSFER: 0.35,
 
   eligibleParties(country, region) {
     return country.all_parties.filter((p) => p.regions === null || p.regions.includes(region.id));
@@ -98,6 +99,22 @@ const ELECTIONS = {
     for (const [k, w] of Object.entries(weights)) {
       out[k] = w <= 0 ? 0.0 : w * Math.exp(rng.gauss(0.0, sigma));
     }
+    return out;
+  },
+
+  winnerSqueeze(votes, winner, frac = ELECTIONS.WINNER_TACTICAL_TRANSFER) {
+    // Tactical consolidation on the night: part of every losing vote piles
+    // onto the local winner, so the counted votes follow the declared result.
+    // Pure transfer: the region's total votes cast are unchanged.
+    const out = {};
+    let moved = 0;
+    for (const [pid, v] of Object.entries(votes)) {
+      if (pid === winner) continue;
+      const take = Math.trunc(v * frac);
+      out[pid] = v - take;
+      moved += take;
+    }
+    out[winner] = votes[winner] + moved;
     return out;
   },
 
@@ -175,9 +192,10 @@ const ELECTIONS = {
       const [votesCast] = ELECTIONS.votesCast(region, cpTotal, rng);
       const votes = ELECTIONS.integerise(ELECTIONS.noisy(weights, rng), votesCast);
       const winner = Object.keys(votes).reduce((a, b) => (votes[a] >= votes[b] ? a : b));
+      const counted = ELECTIONS.winnerSqueeze(votes, winner);
       regionWinners[region.id] = winner;
       seats[winner] = (seats[winner] || 0) + 1;
-      for (const [pid, v] of Object.entries(votes)) national[pid] = (national[pid] || 0) + v;
+      for (const [pid, v] of Object.entries(counted)) national[pid] = (national[pid] || 0) + v;
     }
 
     const rankOf = (pid, table) => Object.keys(table).sort((a, b) => table[b] - table[a]).indexOf(pid) + 1;

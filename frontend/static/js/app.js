@@ -1282,6 +1282,7 @@ function finishElectionNight(s, parties) {
     : "That's the count. It's over.";
   const votes = s.ge_result.national_votes || {};
   const total = Object.values(votes).reduce((a, b) => a + b, 0) || 1;
+  const seatWinnerIds = new Set(Object.keys(s.ge_result.seats || {}));
   const entries = Object.entries(votes)
     .map(([pid, v]) => ({ pid, v, share: v / total, party: parties[pid] || { short: pid, color: "#777" } }))
     .sort((a, b) => b.v - a.v);
@@ -1292,7 +1293,7 @@ function finishElectionNight(s, parties) {
     )
     .join("");
   el("en-votes-legend").innerHTML = entries
-    .slice(0, 6)
+    .filter((e2, idx) => idx < 6 || seatWinnerIds.has(e2.pid))
     .map(
       (e2) =>
         `<span class="legend-item"><span class="dot" style="background:${esc(e2.party.color)}"></span>${esc(e2.party.short)} ${(e2.share * 100).toFixed(1)}%</span>`

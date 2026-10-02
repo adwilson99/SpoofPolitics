@@ -109,6 +109,39 @@ def test_ballot_respects_max_candidates():
         assert len(ballot) <= country.election.max_candidates_on_ballot - 1  # + player
 
 
+def test_count_consolidation_preserves_totals():
+    votes = {"a": 500, "b": 300, "c": 150, "d": 50}
+    squeezed = elections._count_consolidates_to_winner(votes, "b")
+    assert sum(squeezed.values()) == sum(votes.values())
+    assert squeezed["b"] > votes["b"]
+    for pid in ("a", "c", "d"):
+        assert squeezed[pid] < votes[pid]
+
+
+def test_ge_national_votes_follow_declared_winners():
+    """A party that sweeps the regions must also dominate the national vote.
+
+    Regression: with a fragmented field the old count let a party win nearly
+    every region on a ~17% plurality, so the summary bar showed a photo finish
+    next to a 15-1 seat landslide.
+    """
+    country = loader.load_country("uk")
+    mood = {p.id: 1.0 for p in country.all_parties}
+    ge = elections.run_general_election(
+        country=country,
+        mood=mood,
+        player_cp={"youth": 2.5, "middle": 2.5, "pensioner": 2.5},
+        momentum=0.0,
+        rival_cp={"labour": 10, "tories": 9, "reform": 8, "libdems": 7, "greens": 6},
+        rng=random.Random(11),
+    )
+    sweeper = max(ge.seats, key=lambda k: ge.seats[k])
+    assert ge.seats[sweeper] >= 3 * len(country.regions) // 4  # a sweep happened
+    ordered = sorted(ge.national_votes.values(), reverse=True)
+    total = sum(ordered)
+    assert ordered[0] / total >= 2.0 * ordered[1] / total  # and the count says so
+
+
 # ------------------------------------------------------------ full-game flow
 
 def grind_to_victory(engine: GameEngine, target_wins: int, max_weeks: int = 60) -> None:

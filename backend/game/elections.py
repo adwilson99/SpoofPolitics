@@ -35,6 +35,7 @@ GE_CP_HALF_SATURATION = 70.0      # national campaigns are harder to move
 NOISE_SIGMA = 0.07                # multiplicative share noise
 BASE_TURNOUT_BOOST = 0.04         # max turnout bump from campaign excitement
 COALITION_BASE_CHANCE = 0.3
+WINNER_TACTICAL_TRANSFER = 0.35   # slice of each loser's votes that piles onto the region winner
 
 
 def eligible_parties(country: CountryConfig, region: RegionCfg) -> list[PartyCfg]:
@@ -99,6 +100,27 @@ def _noisy(weights: dict[str, float], rng: random.Random, sigma: float = NOISE_S
             out[k] = 0.0
         else:
             out[k] = w * math.exp(rng.gauss(0.0, sigma))
+    return out
+
+
+def _count_consolidates_to_winner(
+    votes: dict[str, int], winner: str, frac: float = WINNER_TACTICAL_TRANSFER
+) -> dict[str, int]:
+    """Tactical consolidation on the night: part of every losing vote piles onto
+    the local winner, so the counted votes follow the declared result.
+
+    A pure transfer — the region's total votes cast are unchanged, the winner's
+    margin is the one that gets reported, and losers keep their ordering.
+    """
+    out: dict[str, int] = {}
+    moved = 0
+    for pid, v in votes.items():
+        if pid == winner:
+            continue
+        take = int(v * frac)
+        out[pid] = v - take
+        moved += take
+    out[winner] = votes[winner] + moved
     return out
 
 
@@ -192,6 +214,7 @@ def run_general_election(
         votes_cast, _ = _votes_cast(region, cp_total, rng)
         votes = _integerise(_noisy(weights, rng), votes_cast)
         winner = max(votes, key=lambda k: votes[k])
+        votes = _count_consolidates_to_winner(votes, winner)
         region_winners[region.id] = winner
         seats[winner] = seats.get(winner, 0) + 1
         for pid, v in votes.items():
