@@ -1229,6 +1229,7 @@ function runElectionNight(s) {
   el("en-ticker").innerHTML = "";
   el("en-summary").classList.add("hidden");
   el("en-coalition").classList.add("hidden");
+  el("en-narrative").classList.add("hidden");
   el("en-sub").textContent = "Results are coming in…";
   el("election-night").classList.remove("hidden");
 
@@ -1276,6 +1277,57 @@ function runElectionNight(s) {
     });
 }
 
+/* The election-night explainer: a tongue-in-cheek psephologist under the map,
+   spelling out why a landslide of regions never means a landslide of votes. */
+function electionNarrative(s, parties) {
+  const gr = s.ge_result || {};
+  const totalRegions = Object.keys(gr.region_winners || {}).length;
+  if (!totalRegions) return "";
+  const votes = gr.national_votes || {};
+  const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0) || 1;
+  const yourSeats = (gr.seats || {})[PLAYER_ID] || 0;
+  const yourPct = (((votes[PLAYER_ID] || 0) / totalVotes) * 100).toFixed(1);
+  const restPct = (100 - (votes[PLAYER_ID] || 0) / totalVotes * 100).toFixed(1);
+  const rivals = Object.entries(votes)
+    .filter(([pid]) => pid !== PLAYER_ID)
+    .sort((a, b) => b[1] - a[1]);
+  const [topPid, topV] = rivals[0] || [null, 0];
+  const topName = topPid ? (parties[topPid] ? parties[topPid].short : topPid) : "nobody";
+  const topPct = ((topV / totalVotes) * 100).toFixed(1);
+  const topSeats = topPid ? (gr.seats || {})[topPid] || 0 : 0;
+  const you = s.candidate.party_name || "You";
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+  let lines;
+  if (yourSeats === totalRegions) {
+    lines = [
+      `A clean sweep: <b>${you} ${yourSeats} from ${totalRegions}</b>. Yes, the others still got votes — ${topName} banked ${topPct}% and the moral victory that goes with it. But this is first past the post: you only had to beat the next saddest in each region, and you did, everywhere, repeatedly. The map has helpfully painted the receipts.`,
+      `<b>${yourSeats} from ${totalRegions}</b> — the lot. The other ${restPct}% of the ballot papers went to parties who will now spend years explaining what went wrong to any hedge that will listen. Winning a region doesn't mean winning all its votes; it just means nobody else came first. Nobody else came first anywhere. Enjoy that.`,
+    ];
+  } else if (yourSeats >= Math.ceil((totalRegions * 2) / 3)) {
+    lines = [
+      `<b>${you}: ${yourSeats} of ${totalRegions}</b> regions on ${yourPct}% of the vote — a mandate so chunky the returning officer checked it twice. ${topName}'s ${topPct}% buys a lovely view of your majority and a lot of rainy press conferences.`,
+      `Landslide doesn't quite cover <b>${yourSeats}/${totalRegions}</b> on ${yourPct}%. Under first past the post, coming first narrowly in lots of places beats coming second brilliantly everywhere — a fact ${topName} (${topPct}%, adapting) is learning live on air.`,
+    ];
+  } else if (yourSeats > totalRegions / 2) {
+    lines = [
+      `<b>${yourSeats} of ${totalRegions}</b> regions and ${yourPct}% of the vote. The system is called first past the post, not first past the post comfortably — and yet here you are, with room to spare and ${topName} (${topPct}%) demanding a recount of their own leaflets.`,
+      `The nation split its votes six ways and its regions mostly one way: <b>you, ${yourSeats}/${totalRegions}</b>. ${topName} took ${topPct}% of the vote and a long, quiet think about what might have been.`,
+    ];
+  } else if (yourSeats > 0) {
+    lines = [
+      `It's gone <b>${you} ${yourSeats}, ${topName} ${topSeats}</b>. ${topName}'s ${topPct}% of the vote sounds like a lot until you remember votes don't unlock the map — regions do. You found the ones that mattered.`,
+      `Scraped home in <b>${yourSeats} of ${totalRegions}</b> regions on ${yourPct}% of the vote. First past the post doesn't do elegance: one vote the right side of the line in the right region counts the same as a landslide.`,
+    ];
+  } else {
+    lines = [
+      `You came first in precisely nowhere. The other parties shared ${restPct}% of the vote between them and every single region between them too. ${topName} (${topPct}%) is already measuring the curtains.`,
+      `Not one region. Democracy has spoken, mostly to other people — ${topName} took ${topPct}% and the keys, while your ${yourPct}% secures its place in several documentaries and at least one pub quiz.`,
+    ];
+  }
+  return pick(lines);
+}
+
 function finishElectionNight(s, parties) {
   el("en-sub").textContent = s.game_over.victory
     ? "And the nation chose CHAOS."
@@ -1315,6 +1367,8 @@ function finishElectionNight(s, parties) {
       ? "Coalition talks went your way. The keys are yours."
       : "Coalition talks collapsed. Someone took the ball home.";
   }
+  el("en-narrative").innerHTML = electionNarrative(s, parties);
+  el("en-narrative").classList.remove("hidden");
   el("en-summary").classList.remove("hidden");
 }
 
