@@ -219,6 +219,7 @@ function renderPersonaGridInto(containerId, rerender) {
   const none = document.createElement("button");
   none.type = "button";
   none.className = "pick-card persona" + (state.persona === "" ? " selected" : "");
+  none.title = "Just you, a rosette, and an unreasonable amount of hope.";
   none.innerHTML = `<div class="pick-head"><span class="pick-emoji">🚫</span><span class="pick-name">No persona</span></div>
     <div class="pick-blurb">Just you, a rosette, and an unreasonable amount of hope.</div>`;
   none.addEventListener("click", () => {
@@ -231,6 +232,7 @@ function renderPersonaGridInto(containerId, rerender) {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "pick-card persona" + (state.persona === p.id ? " selected" : "");
+    card.title = p.blurb; // hover tooltip — the compact layout hides the inline blurb
     card.innerHTML = `
       <div class="pick-head"><span class="pick-emoji">${esc(p.emoji)}</span><span class="pick-name">${esc(p.name)}</span></div>
       <div class="pick-blurb">${esc(p.blurb)}</div>`;
@@ -252,6 +254,7 @@ function renderPolicyGrid() {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "pick-card policy" + (picked ? " selected" : "") + (full ? " disabled" : "");
+    card.title = p.blurb; // shown on hover — the compact layout hides the inline blurb
     const tags = (p.tags || []).map((t) => `<span class="tag-chip">${esc(t.replace(/_/g, " "))}</span>`).join("");
     card.innerHTML = `
       <div class="pick-head"><span class="pick-emoji">${esc(p.emoji)}</span><span class="pick-name">${esc(p.name)}</span></div>
@@ -599,7 +602,7 @@ function renderActions(s) {
     btn.type = "button";
     btn.className = "action-btn";
     btn.disabled = !a.affordable;
-    if (!a.affordable) btn.title = a.reason_unavailable;
+    btn.title = a.affordable ? a.desc : `${a.desc}\n(${a.reason_unavailable})`;
     const cost = a.cost > 0 ? ` · ${cur}${a.cost}` : "";
     btn.innerHTML = `
       <div class="action-head"><span class="action-emoji">${esc(a.emoji)}</span><span class="action-name">${esc(a.name)}</span></div>
@@ -699,7 +702,6 @@ function renderPolls(s) {
 }
 
 function renderWarchest(s) {
-  const box = el("warchest-panel");
   const cur = s.country.currency_symbol;
   const signed = new Set(s.sponsors.map((sp) => sp.tier_id));
 
@@ -731,19 +733,22 @@ function renderWarchest(s) {
     )
     .join("");
 
-  box.innerHTML = `
-    <h3>War chest</h3>
-    <div class="warchest-sub">Sponsors on the payroll</div>
+  el("warchest-panel").innerHTML = `
+    <h3>Sponsors</h3>
+    <div class="warchest-sub">On the payroll</div>
     <div class="chip-row">${signedChips || '<span class="dim">none (clean hands, empty pockets)</span>'}</div>
     ${tierButtons ? `<div class="warchest-sub">Sign a sponsor</div><div class="buy-list">${tierButtons}</div>` : ""}
-    <div class="warchest-sub">Paid promotion</div>
-    <div class="chip-row">${activeMarketing || ""}</div>
+    <p class="hint">Every sponsor raises your scandal risk — the press can smell money.</p>`;
+
+  el("marketing-panel").innerHTML = `
+    <h3>Paid promotion</h3>
+    <div class="chip-row">${activeMarketing || '<span class="dim">nothing running — the airwaves are silent</span>'}</div>
     <div class="buy-list">${channelButtons}</div>`;
 
-  for (const b of box.querySelectorAll("[data-tier]")) {
+  for (const b of el("warchest-panel").querySelectorAll("[data-tier]")) {
     b.addEventListener("click", () => doAction("sponsor", { tier_id: b.dataset.tier }));
   }
-  for (const b of box.querySelectorAll("[data-channel]")) {
+  for (const b of el("marketing-panel").querySelectorAll("[data-channel]")) {
     b.addEventListener("click", () => doAction("marketing", { channel_id: b.dataset.channel }));
   }
 }

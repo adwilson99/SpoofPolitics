@@ -37,15 +37,17 @@
         <div id="saves-list" class="saves-list"></div>
       </section>
 
-      <section class="setup-section">
-        <h2>Choose your country</h2>
-        <div id="country-grid" class="country-grid" aria-label="Country selection"></div>
-      </section>
+      <div class="setup-row">
+        <section class="setup-section">
+          <h2>Choose your country</h2>
+          <div id="country-grid" class="country-grid" aria-label="Country selection"></div>
+        </section>
 
-      <section class="setup-section">
-        <h2>Choose your difficulty</h2>
-        <div id="difficulty-grid" class="difficulty-grid" aria-label="Difficulty selection"></div>
-      </section>
+        <section class="setup-section">
+          <h2>Choose your difficulty</h2>
+          <div id="difficulty-grid" class="difficulty-grid" aria-label="Difficulty selection"></div>
+        </section>
+      </div>
 
       <button id="start-button" class="btn-primary" disabled>Start Campaign 🎩</button>
       <p class="hint" id="setup-hint">Select a country and a difficulty to begin.</p>
@@ -63,35 +65,41 @@
       <p class="screen-kicker" id="setup-kicker"></p>
       <h2 class="screen-title">Create your candidate</h2>
 
-      <div class="form-grid">
-        <label class="field"><span>Your name</span>
-          <input id="cand-name" maxlength="60" placeholder="e.g. Rory Spatula" autocomplete="off" />
-        </label>
-        <label class="field"><span>Party name</span>
-          <input id="cand-party" maxlength="60" placeholder="e.g. The Sensible Loon Party" autocomplete="off" />
-        </label>
-        <label class="field"><span>Slogan <em>(optional)</em></span>
-          <input id="cand-slogan" maxlength="120" placeholder="e.g. A spatula in every drawer" autocomplete="off" />
-        </label>
+      <div class="setup-columns">
+        <div class="setup-col">
+          <div class="form-grid">
+            <label class="field"><span>Your name</span>
+              <input id="cand-name" maxlength="60" placeholder="e.g. Rory Spatula" autocomplete="off" />
+            </label>
+            <label class="field"><span>Party name</span>
+              <input id="cand-party" maxlength="60" placeholder="e.g. The Sensible Loon Party" autocomplete="off" />
+            </label>
+            <label class="field"><span>Slogan <em>(optional)</em></span>
+              <input id="cand-slogan" maxlength="120" placeholder="e.g. A spatula in every drawer" autocomplete="off" />
+            </label>
+          </div>
+
+          <div class="form-row">
+            <div class="field"><span>Badge</span><div id="emoji-row" class="emoji-row"></div></div>
+            <label class="field"><span>Rosette colour</span>
+              <input type="color" id="cand-color" value="#D4A937" />
+            </label>
+          </div>
+
+          <section class="setup-section">
+            <h2>Choose a persona <span class="optional">(optional — small perk)</span></h2>
+            <div id="persona-grid" class="card-grid"></div>
+          </section>
+        </div>
+
+        <div class="setup-col">
+          <section class="setup-section">
+            <h2>Manifesto — pick exactly 3 policies</h2>
+            <div id="policy-grid" class="card-grid"></div>
+            <p class="hint" id="policy-hint"></p>
+          </section>
+        </div>
       </div>
-
-      <div class="form-row">
-        <div class="field"><span>Badge</span><div id="emoji-row" class="emoji-row"></div></div>
-        <label class="field"><span>Rosette colour</span>
-          <input type="color" id="cand-color" value="#D4A937" />
-        </label>
-      </div>
-
-      <section class="setup-section">
-        <h2>Choose a persona <span class="optional">(optional — small perk)</span></h2>
-        <div id="persona-grid" class="card-grid"></div>
-      </section>
-
-      <section class="setup-section">
-        <h2>Manifesto — pick exactly 3 policies</h2>
-        <div id="policy-grid" class="card-grid"></div>
-        <p class="hint" id="policy-hint"></p>
-      </section>
 
       <div class="btn-row">
         <button id="back-button" class="btn-secondary">← Back</button>
@@ -156,7 +164,10 @@
     </section>
 
     <section class="tab-page hidden" id="tab-warchest">
-      <section class="panel" id="warchest-panel"></section>
+      <div class="campaign-layout">
+        <section class="panel" id="warchest-panel"></section>
+        <section class="panel" id="marketing-panel"></section>
+      </div>
     </section>
 
     <section class="tab-page hidden" id="tab-news">

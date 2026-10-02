@@ -1038,12 +1038,127 @@ svg.ukmap path.foreign {
 
 /* ---------- Responsive ---------- */
 
-@media (max-width: 900px) {
+/* Two-column campaign/settings collapse only on real phones: the itch box is
+   800px wide and must keep both columns. */
+@media (max-width: 640px) {
   .campaign-layout { grid-template-columns: 1fr; }
   .go-stats { grid-template-columns: 1fr; }
   .en-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 640px) {
   .screen { padding: 6px 6px 36px; }
   .panel { padding: 10px; margin-bottom: 10px; }
+}
+
+/* ============================================================
+   Compact layout — every screen fits the 800×620 itch.io frame
+   (and any window ≥680px wide) without page scrolling.
+   ============================================================ */
+@media (min-width: 680px) {
+  /* --- shared chrome --- */
+  .screen { padding: 8px 12px 14px; }
+  .panel { padding: 9px 12px; margin-bottom: 9px; border-radius: 10px; }
+  .panel h3 { font-size: 0.92rem; margin: 0 0 7px; padding-bottom: 4px; }
+  .hint { font-size: 0.72rem; margin-top: 6px; }
+  .status-line { margin: 2px 0; font-size: 0.85rem; }
+  .status-line.big { font-size: 1.05rem; }
+
+  /* --- title screen --- */
+  .title-screen { max-width: 780px; padding: 8px 12px; }
+  .title-card { padding: 12px 18px 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+  .title-flag { font-size: 1.6rem; margin-bottom: 2px; }
+  .game-title { font-size: clamp(1.4rem, 3.2vw, 1.9rem); margin: 0 0 2px; }
+  .subtitle { margin: 0 0 8px; font-size: 0.85rem; }
+  .disclaimer-inline { margin: 0 auto 10px; font-size: 0.68rem; line-height: 1.35; padding: 5px 10px; max-width: 540px; }
+  .setup-section { margin: 10px 0; }
+  .setup-section h2 { font-size: 0.85rem; margin: 0 0 7px; padding-bottom: 3px; }
+
+  .setup-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 14px; }
+  .country-grid { grid-template-columns: 1fr; gap: 8px; }
+  .country-card { padding: 8px 10px; }
+  .country-card .flag { font-size: 1.25rem; }
+  .country-card .name { margin-top: 2px; font-size: 0.9rem; }
+  .difficulty-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .difficulty-card { padding: 7px 9px; }
+  .difficulty-card .desc { font-size: 0.66rem; margin-top: 2px; line-height: 1.3; }
+  .difficulty-card .facts { font-size: 0.62rem; margin-top: 3px; }
+
+  #start-button { font-size: 1rem; padding: 9px 30px; margin-top: 10px; }
+  .footer { margin-top: 8px; font-size: 0.66rem; }
+  .footer-fineprint { font-size: 0.6rem; }
+
+  /* --- candidate creation: two columns, compact pick cards --- */
+  .screen-title { font-size: 1.2rem; margin: 0 0 8px; }
+  .screen-kicker { font-size: 0.72rem; margin: 0 0 2px; }
+  .setup-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; align-items: start; }
+  .form-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 8px; }
+  .field { font-size: 0.72rem; gap: 3px; }
+  .field input[type="text"], .field input:not([type]) { padding: 6px 9px; font-size: 0.85rem; }
+  .form-row { gap: 12px; margin-bottom: 4px; }
+  .emoji-choice { width: 30px; height: 30px; font-size: 1rem; }
+  .emoji-row { gap: 4px; }
+
+  .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .pick-card { padding: 5px 8px; border-width: 1.5px; border-radius: 8px; }
+  .pick-head { font-size: 0.76rem; gap: 5px; }
+  .pick-emoji { font-size: 0.95rem; }
+  .pick-blurb { font-size: 0.62rem; margin-top: 2px; line-height: 1.25;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .tag-chip { font-size: 0.56rem; padding: 0 5px; }
+  .tag-row { margin-top: 3px; gap: 3px; }
+
+  .btn-row { margin-top: 10px; gap: 10px; }
+  .btn-secondary { padding: 8px 18px; font-size: 0.85rem; }
+  #launch-button { font-size: 0.95rem; padding: 9px 26px; margin-top: 0; }
+
+  /* --- campaign screen --- */
+  .campaign-layout { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 12px; }
+  .actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .action-btn { padding: 5px 8px; }
+  .action-head { font-size: 0.8rem; gap: 6px; }
+  .action-emoji { font-size: 1rem; }
+  .action-meta { font-size: 0.64rem; margin: 2px 0; }
+  .action-desc { font-size: 0.63rem; line-height: 1.25;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .log-line { font-size: 0.74rem; padding: 4px 8px; margin: 3px 0; }
+  .mani-policy { font-size: 0.7rem; padding: 2px 8px; }
+  .btn-force { margin-top: 8px; font-size: 0.9rem; padding: 9px; }
+
+  /* --- map: cap the SVG height so the tab fits --- */
+  svg.ukmap { width: auto; height: 44vh; max-width: 100%; }
+  .map-legend { font-size: 0.72rem; gap: 8px; margin-bottom: 6px; }
+
+  /* --- settings tab --- */
+  #tab-settings .form-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #tab-settings .btn-primary { margin-top: 4px; padding: 8px 20px; font-size: 0.9rem; }
+  .settings-actions .btn-small { padding: 7px 12px; font-size: 0.78rem; }
+  .volume-field { font-size: 0.72rem; }
+
+  /* --- one-line pick rows (18 policies, 7 personas): blurb kept as tooltip --- */
+  .pick-card { display: flex; align-items: center; gap: 6px; padding: 4px 9px; }
+  .pick-card .pick-head { flex: 1 1 auto; min-width: 0; }
+  .pick-card .pick-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pick-card .pick-emoji { flex: 0 0 auto; }
+  .pick-card .pick-blurb,
+  .pick-card .tag-row { display: none; }
+
+  /* badge row on one line: 10 emojis + the colour swatch fit the left column */
+  .form-row { flex-wrap: nowrap; }
+  .emoji-row { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
+  .emoji-choice { width: 26px; height: 26px; font-size: 0.85rem; }
+  .field input[type="color"] { width: 44px; height: 30px; }
+
+  /* one-line campaign action buttons (desc kept as tooltip) */
+  .action-btn { display: flex; align-items: center; gap: 8px; padding: 4px 9px; }
+  .action-head { flex: 1 1 auto; min-width: 0; }
+  .action-meta { margin: 0 0 0 auto; white-space: nowrap; }
+  .action-desc { display: none; }
+
+  /* saves list on the title screen: cap rather than push the footer off-box */
+  .saves-list { max-height: 108px; overflow-y: auto; }
+  .save-card { padding: 6px 10px; }
+
+  /* war chest split columns */
+  .warchest-sub { margin: 8px 0 5px; }
+  .buy-btn { padding: 5px 9px; }
+  .buy-blurb { font-size: 0.62rem; margin-top: 1px; }
+  .chip { font-size: 0.7rem; padding: 2px 8px; }
 }
