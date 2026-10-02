@@ -52,11 +52,19 @@ function showToast(message, ms = 3200) {
   showToast._timer = setTimeout(() => toast.classList.add("hidden"), ms);
 }
 
+// The page scroller is #scroll-root (itch's iframe forbids document scrolling),
+// with the window as fallback for contexts without it.
+function scrollToTop() {
+  const root = document.getElementById("scroll-root");
+  if (root) root.scrollTo(0, 0);
+  window.scrollTo(0, 0);
+}
+
 function showScreen(name) {
   for (const id of ["title-screen", "setup-screen", "campaign-screen"]) {
     el(id).classList.toggle("hidden", id !== `${name}-screen`);
   }
-  window.scrollTo(0, 0);
+  scrollToTop();
 }
 
 const TABS = ["campaign", "map", "polls", "warchest", "news", "settings"];
@@ -66,7 +74,7 @@ function showTab(name) {
   document.querySelectorAll(".tab-page").forEach((p) => p.classList.toggle("hidden", p.id !== `tab-${name}`));
   document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
   if (name === "settings" && state.snapshot) fillSettings(state.snapshot);
-  window.scrollTo(0, 0);
+  scrollToTop();
 }
 
 function countryCfg() {
